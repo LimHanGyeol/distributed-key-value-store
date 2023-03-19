@@ -1,12 +1,5 @@
-plugins {
-    id("org.jlleitschuh.gradle.ktlint")
-
-    kotlin("jvm") version "1.7.20"
-}
+tasks.getByPath("jar").enabled = true
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-
-    testImplementation(kotlin("test"))
+    testImplementation("org.assertj:assertj-core:3.24.2")
 }
