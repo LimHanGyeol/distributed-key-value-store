@@ -1,4 +1,4 @@
-package com.tommy
+package com.tommy.proxy
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
