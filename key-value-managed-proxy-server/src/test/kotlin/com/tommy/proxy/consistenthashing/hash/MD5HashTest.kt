@@ -1,4 +1,4 @@
-package com.tommy.proxy.consistent_hashing.hash
+package com.tommy.proxy.consistenthashing.hash
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName

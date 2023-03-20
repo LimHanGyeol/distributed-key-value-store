@@ -1,4 +1,4 @@
-package com.tommy.proxy.consistent_hashing.node
+package com.tommy.proxy.consistenthashing.node
 
 class VirtualNode<T : Node>(
     val physicalNode: T,
@@ -13,4 +13,3 @@ class VirtualNode<T : Node>(
         return this.physicalNode.getKey() == physicalNode.getKey()
     }
 }
-

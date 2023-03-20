@@ -1,6 +1,6 @@
-package com.tommy.proxy.consistent_hashing
+package com.tommy.proxy.consistenthashing
 
-import com.tommy.proxy.consistent_hashing.node.Instance
+import com.tommy.proxy.consistenthashing.node.Instance
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -20,7 +20,7 @@ class ConsistentHashRouterTest {
         // Act
         val actual = ConsistentHashRouter(
             physicalNodes = listOf(node1, node2, node3, node4),
-            virtualNodeCount = virtualNodeCount,
+            virtualNodeCount = virtualNodeCount
         )
 
         // Assert
@@ -39,7 +39,7 @@ class ConsistentHashRouterTest {
 
         val sut = ConsistentHashRouter(
             physicalNodes = listOf(node1, node2, node3),
-            virtualNodeCount = virtualNodeCount,
+            virtualNodeCount = virtualNodeCount
         )
 
         // Act
@@ -61,12 +61,11 @@ class ConsistentHashRouterTest {
 
         val sut = ConsistentHashRouter(
             physicalNodes = listOf(node1, node2, node3, node4),
-            virtualNodeCount = virtualNodeCount,
+            virtualNodeCount = virtualNodeCount
         )
 
         // Act
         sut.removeNode(node4)
-
 
         // Assert
         assertThat(sut.getHashRingSize()).isEqualTo(30)
@@ -86,7 +85,7 @@ class ConsistentHashRouterTest {
 
         val sut = ConsistentHashRouter(
             physicalNodes = listOf(node1, node2, node3, node4),
-            virtualNodeCount = virtualNodeCount,
+            virtualNodeCount = virtualNodeCount
         )
 
         // Act
