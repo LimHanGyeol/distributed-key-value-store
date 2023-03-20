@@ -1,4 +1,4 @@
-package com.tommy.proxy.consistent_hashing.hash
+package com.tommy.proxy.consistenthashing.hash
 
 interface HashFunction {
 

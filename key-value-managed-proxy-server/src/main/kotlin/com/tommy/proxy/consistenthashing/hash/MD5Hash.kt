@@ -1,4 +1,4 @@
-package com.tommy.proxy.consistent_hashing.hash
+package com.tommy.proxy.consistenthashing.hash
 
 import java.security.MessageDigest
 
@@ -15,7 +15,7 @@ class MD5Hash : HashFunction {
 
         val digest = instance.digest()
 
-        var hash = 0;
+        var hash = 0
         (0..3).forEach { i ->
             hash = hash shl 8
             hash = hash or ((digest[i].toInt() and 0xFF))

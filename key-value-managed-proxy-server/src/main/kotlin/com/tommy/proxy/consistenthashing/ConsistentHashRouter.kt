@@ -1,17 +1,16 @@
-package com.tommy.proxy.consistent_hashing
+package com.tommy.proxy.consistenthashing
 
-import com.tommy.proxy.consistent_hashing.hash.HashFunction
-import com.tommy.proxy.consistent_hashing.hash.MD5Hash
-import com.tommy.proxy.consistent_hashing.node.Node
-import com.tommy.proxy.consistent_hashing.node.VirtualNode
+import com.tommy.proxy.consistenthashing.hash.HashFunction
+import com.tommy.proxy.consistenthashing.hash.MD5Hash
+import com.tommy.proxy.consistenthashing.node.Node
+import com.tommy.proxy.consistenthashing.node.VirtualNode
 import java.util.SortedMap
 import java.util.TreeMap
-
 
 class ConsistentHashRouter<T : Node>(
     physicalNodes: List<T>,
     virtualNodeCount: Int,
-    private val hashFunction: HashFunction = MD5Hash(),
+    private val hashFunction: HashFunction = MD5Hash()
 ) {
     private val hashRing: TreeMap<Long, VirtualNode<T>> = TreeMap()
 

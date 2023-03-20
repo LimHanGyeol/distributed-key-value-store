@@ -1,8 +1,8 @@
-package com.tommy.proxy.consistent_hashing.node
+package com.tommy.proxy.consistenthashing.node
 
 class Instance(
     private val ip: String,
-    private val port: Int,
+    private val port: Int
 ) : Node {
 
     override fun getKey(): String = "$ip:$port"
