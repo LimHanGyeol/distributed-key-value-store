@@ -2,6 +2,7 @@ package com.tommy.keyvaluestore.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
+import com.tommy.keyvaluestore.dtos.KeyValueGetResponse
 import com.tommy.keyvaluestore.dtos.KeyValueSaveRequest
 import com.tommy.keyvaluestore.dtos.KeyValueSaveResponse
 import com.tommy.keyvaluestore.services.KeyValueService
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -46,5 +48,47 @@ class KeyValueControllerTest @Autowired constructor(
 
         actual.andExpect(status().isOk)
             .andExpect(jsonPath("$.key").value("name"))
+    }
+
+    @Test
+    @DisplayName("key 에 해당하는 값이 존재할 경우 KeyValueGetResponse 를 응답한다.")
+    fun `sut should return KeyValueGetResponse when exist key is given`() {
+        // Arrange
+        val value = "hangyeol"
+
+        every { keyValueService.get("name") } returns KeyValueGetResponse(value)
+
+        // Act
+        val actual = mockMvc.perform(
+            get("/")
+                .param("key", "name")
+                .accept(MediaType.APPLICATION_JSON),
+        ).andDo(print())
+
+        // Assert
+        verify { keyValueService.get(any()) }
+
+        actual.andExpect(status().isOk)
+            .andExpect(jsonPath("$.value").value("hangyeol"))
+    }
+
+    @Test
+    @DisplayName("key 에 해당하는 값이 존재하지 않을 경우 KeyValueGetResponse(null) 을 응답한다.")
+    fun `sut should return Null KeyValueResponse when not exist key is given`() {
+        // Arrange
+        every { keyValueService.get("name") } returns KeyValueGetResponse(null)
+
+        // Act
+        val actual = mockMvc.perform(
+            get("/")
+                .param("key", "name")
+                .accept(MediaType.APPLICATION_JSON),
+        ).andDo(print())
+
+        // Assert
+        verify { keyValueService.get(any()) }
+
+        actual.andExpect(status().isOk)
+            .andExpect(jsonPath("$.value").value(null))
     }
 }
