@@ -20,7 +20,7 @@ class ConsistentHashRouterTest {
         // Act
         val actual = ConsistentHashRouter(
             physicalNodes = listOf(node1, node2, node3, node4),
-            virtualNodeCount = virtualNodeCount
+            virtualNodeCount = virtualNodeCount,
         )
 
         // Assert
@@ -39,7 +39,7 @@ class ConsistentHashRouterTest {
 
         val sut = ConsistentHashRouter(
             physicalNodes = listOf(node1, node2, node3),
-            virtualNodeCount = virtualNodeCount
+            virtualNodeCount = virtualNodeCount,
         )
 
         // Act
@@ -61,7 +61,7 @@ class ConsistentHashRouterTest {
 
         val sut = ConsistentHashRouter(
             physicalNodes = listOf(node1, node2, node3, node4),
-            virtualNodeCount = virtualNodeCount
+            virtualNodeCount = virtualNodeCount,
         )
 
         // Act
@@ -85,7 +85,7 @@ class ConsistentHashRouterTest {
 
         val sut = ConsistentHashRouter(
             physicalNodes = listOf(node1, node2, node3, node4),
-            virtualNodeCount = virtualNodeCount
+            virtualNodeCount = virtualNodeCount,
         )
 
         // Act

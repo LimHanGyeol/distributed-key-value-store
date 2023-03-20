@@ -10,7 +10,7 @@ import java.util.TreeMap
 class ConsistentHashRouter<T : Node>(
     physicalNodes: List<T>,
     virtualNodeCount: Int,
-    private val hashFunction: HashFunction = MD5Hash()
+    private val hashFunction: HashFunction = MD5Hash(),
 ) {
     private val hashRing: TreeMap<Long, VirtualNode<T>> = TreeMap()
 
