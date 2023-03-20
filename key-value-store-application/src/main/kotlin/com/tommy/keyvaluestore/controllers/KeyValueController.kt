@@ -4,7 +4,6 @@ import com.tommy.keyvaluestore.dtos.KeyValueGetResponse
 import com.tommy.keyvaluestore.dtos.KeyValueSaveRequest
 import com.tommy.keyvaluestore.dtos.KeyValueSaveResponse
 import com.tommy.keyvaluestore.services.KeyValueService
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -17,9 +16,8 @@ class KeyValueController(
 ) {
 
     @PostMapping("/")
-    fun save(@RequestBody keyValueSaveRequest: KeyValueSaveRequest): ResponseEntity<KeyValueSaveResponse> {
-        val keyValueResponse = keyValueService.put(keyValueSaveRequest)
-        return ResponseEntity.ok().body(keyValueResponse)
+    fun save(@RequestBody keyValueSaveRequest: KeyValueSaveRequest): KeyValueSaveResponse {
+        return keyValueService.put(keyValueSaveRequest)
     }
 
     @GetMapping("/")
