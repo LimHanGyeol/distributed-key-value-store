@@ -2,6 +2,7 @@ package com.tommy.proxy.services
 
 import com.tommy.proxy.consistenthashing.ConsistentHashRouter
 import com.tommy.proxy.consistenthashing.node.Instance
+import com.tommy.proxy.dtos.KeyValueGetResponse
 import com.tommy.proxy.dtos.KeyValueSaveRequest
 import com.tommy.proxy.dtos.KeyValueSaveResponse
 import mu.KotlinLogging
@@ -27,13 +28,27 @@ class KeyValueProxyService(
             val headers = HttpHeaders()
             headers.contentType = MediaType.APPLICATION_JSON
 
-            val responseEntity = restTemplate.postForEntity(
+            val responseEntity = restTemplate.postForObject(
                 nodeIp,
                 HttpEntity(keyValueSaveRequest, headers),
                 KeyValueSaveResponse::class.java,
             )
 
-            responseEntity.body!!
+            responseEntity!!
+        } catch (e: Exception) {
+            logger.error { e.message }
+            throw RuntimeException(e.message)
+        }
+    }
+
+    fun get(requestIP: String, key: String): KeyValueGetResponse {
+        val consistentHashRouter = ConsistentHashRouter(nodes, VIRTUAL_NODE_COUNT)
+        val instance = consistentHashRouter.routeNode(requestIP) ?: throw RuntimeException()
+
+        val nodeIp = instance.getKey()
+
+        return try {
+            restTemplate.getForObject("$nodeIp?key=$key", KeyValueGetResponse::class.java)!!
         } catch (e: Exception) {
             logger.error { e.message }
             throw RuntimeException(e.message)

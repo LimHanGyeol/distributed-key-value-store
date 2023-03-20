@@ -60,7 +60,7 @@ class KeyValueControllerTest @Autowired constructor(
 
         // Act
         val actual = mockMvc.perform(
-            get("/")
+            get("")
                 .param("key", "name")
                 .accept(MediaType.APPLICATION_JSON),
         ).andDo(print())
@@ -80,7 +80,7 @@ class KeyValueControllerTest @Autowired constructor(
 
         // Act
         val actual = mockMvc.perform(
-            get("/")
+            get("")
                 .param("key", "name")
                 .accept(MediaType.APPLICATION_JSON),
         ).andDo(print())
