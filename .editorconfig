@@ -12,7 +12,6 @@ trim_trailing_whitespace = true
 
 max_line_length = 120
 tab_width = 4
-ij_continuation_indent_size = 8
 
 [.editorconfig]
 ij_editorconfig_align_group_field_declarations = false
