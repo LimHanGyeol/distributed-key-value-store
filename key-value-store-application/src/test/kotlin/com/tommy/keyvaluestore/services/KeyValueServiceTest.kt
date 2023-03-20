@@ -1,5 +1,6 @@
 package com.tommy.keyvaluestore.services
 
+import com.tommy.keyvaluestore.dtos.KeyValueGetResponse
 import com.tommy.keyvaluestore.dtos.KeyValueSaveRequest
 import com.tommy.keyvaluestore.dtos.KeyValueSaveResponse
 import io.mockk.every
@@ -29,5 +30,35 @@ internal class KeyValueServiceTest(
         // Assert
         assertThat(actual).isInstanceOf(KeyValueSaveResponse::class.java)
         assertThat(actual.key).isEqualTo(keyValueSaveRequest.key)
+    }
+
+    @Test
+    @DisplayName("key 에 해당하는 값이 존재할 경우 해당 값을 응답한다.")
+    fun `sut should return value when exist key is given`() {
+        // Arrange
+        val value = "hangyeol"
+
+        every { sut.get("name") } returns KeyValueGetResponse(value)
+
+        // Act
+        val actual = sut.get("name")
+
+        // Assert
+        assertThat(actual).isInstanceOf(KeyValueGetResponse::class.java)
+        assertThat(actual.value).isEqualTo(value)
+    }
+
+    @Test
+    @DisplayName("key 에 해당하는 값이 존재하지 않을 경우 null 을 응답한다.")
+    fun `sut should return null when not exist key is given`() {
+        // Arrange
+        every { sut.get("name") } returns KeyValueGetResponse(null)
+
+        // Act
+        val actual = sut.get("name")
+
+        // Assert
+        assertThat(actual).isInstanceOf(KeyValueGetResponse::class.java)
+        assertThat(actual.value).isNull()
     }
 }
