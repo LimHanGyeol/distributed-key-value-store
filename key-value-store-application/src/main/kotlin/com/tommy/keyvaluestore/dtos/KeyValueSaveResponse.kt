@@ -1,6 +1,5 @@
 package com.tommy.keyvaluestore.dtos
 
-data class KeyValueRequest(
+data class KeyValueSaveResponse(
     val key: String,
-    val value: Any,
 )

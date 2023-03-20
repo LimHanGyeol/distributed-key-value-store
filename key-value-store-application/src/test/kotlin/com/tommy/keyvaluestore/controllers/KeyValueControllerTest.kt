@@ -2,8 +2,8 @@ package com.tommy.keyvaluestore.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
-import com.tommy.keyvaluestore.dtos.KeyValueRequest
-import com.tommy.keyvaluestore.dtos.KeyValueResponse
+import com.tommy.keyvaluestore.dtos.KeyValueSaveRequest
+import com.tommy.keyvaluestore.dtos.KeyValueSaveResponse
 import com.tommy.keyvaluestore.services.KeyValueService
 import io.mockk.every
 import io.mockk.verify
@@ -27,18 +27,18 @@ class KeyValueControllerTest @Autowired constructor(
 
     @Test
     @DisplayName("key value 가 입력되면 이를 메모리에 저장한다.")
-    fun `sut should return KeyValueResponse when keyValueRequest is given`() {
+    fun `sut should return KeyValueSaveResponse when keyValueRequest is given`() {
         // Arrange
-        val keyValueRequest = KeyValueRequest(key = "name", value = "hangyeol")
+        val keyValueSaveRequest = KeyValueSaveRequest(key = "name", value = "hangyeol")
 
-        every { keyValueService.put(keyValueRequest) } returns KeyValueResponse(keyValueRequest.key)
+        every { keyValueService.put(keyValueSaveRequest) } returns KeyValueSaveResponse(keyValueSaveRequest.key)
 
         // Act
         val actual = mockMvc.perform(
             post("/")
                 .contentType(MediaType.APPLICATION_JSON_VALUE).characterEncoding("UTF-8")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(keyValueRequest)),
+                .content(objectMapper.writeValueAsString(keyValueSaveRequest)),
         ).andDo(print())
 
         // Assert
