@@ -18,9 +18,9 @@ class KeyValueProxyService(
 ) {
     private val logger = KotlinLogging.logger { }
 
-    fun put(requestIP: String, keyValueSaveRequest: KeyValueSaveRequest): KeyValueSaveResponse {
+    fun put(keyValueSaveRequest: KeyValueSaveRequest): KeyValueSaveResponse {
         val consistentHashRouter = ConsistentHashRouter(nodes, VIRTUAL_NODE_COUNT)
-        val instance = consistentHashRouter.routeNode(requestIP) ?: throw RuntimeException()
+        val instance = consistentHashRouter.routeNode(keyValueSaveRequest.key) ?: throw RuntimeException()
 
         val nodeIp = instance.getKey()
 
@@ -41,9 +41,9 @@ class KeyValueProxyService(
         }
     }
 
-    fun get(requestIP: String, key: String): KeyValueGetResponse {
+    fun get(key: String): KeyValueGetResponse {
         val consistentHashRouter = ConsistentHashRouter(nodes, VIRTUAL_NODE_COUNT)
-        val instance = consistentHashRouter.routeNode(requestIP) ?: throw RuntimeException()
+        val instance = consistentHashRouter.routeNode(key) ?: throw RuntimeException()
 
         val nodeIp = instance.getKey()
 
