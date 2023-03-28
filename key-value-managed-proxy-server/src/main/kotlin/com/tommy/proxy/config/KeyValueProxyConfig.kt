@@ -5,6 +5,7 @@ import io.netty.handler.timeout.ReadTimeoutHandler
 import io.netty.handler.timeout.WriteTimeoutHandler
 import java.time.Duration
 import java.util.concurrent.TimeUnit
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
@@ -14,6 +15,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
 
 @Configuration
+@EnableConfigurationProperties(KeyValueRoutesProperties::class)
 class KeyValueProxyConfig {
 
     @Bean
