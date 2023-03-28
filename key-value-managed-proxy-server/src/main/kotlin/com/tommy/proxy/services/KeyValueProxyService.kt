@@ -6,39 +6,50 @@ import com.tommy.proxy.dtos.KeyValueGetResponse
 import com.tommy.proxy.dtos.KeyValueSaveRequest
 import com.tommy.proxy.dtos.KeyValueSaveResponse
 import mu.KotlinLogging
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import org.springframework.web.client.RestTemplate
+import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.bodyToMono
+import org.springframework.web.util.UriBuilder
+import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 
 @Service
 class KeyValueProxyService(
-    private val restTemplate: RestTemplate,
+    private val webClient: WebClient,
 ) {
     private val logger = KotlinLogging.logger { }
 
     fun put(keyValueSaveRequest: KeyValueSaveRequest): KeyValueSaveResponse {
-        val consistentHashRouter = ConsistentHashRouter(nodes, VIRTUAL_NODE_COUNT)
-        val instance = consistentHashRouter.routeNode(keyValueSaveRequest.key) ?: throw RuntimeException()
+        val masterNodeIp = node1.getKey()
 
-        val nodeIp = instance.getKey()
+        val otherNodes = listOf(node1, node2, node3, node4)
+            .filterNot { it.getKey() == masterNodeIp }
+            .toList()
 
-        return try {
-            val headers = HttpHeaders()
-            headers.contentType = MediaType.APPLICATION_JSON
+        val masterNodeResponse = callKeyValueSave(masterNodeIp, keyValueSaveRequest)
+            .block()
 
-            val responseEntity = restTemplate.postForObject(
-                nodeIp,
-                HttpEntity(keyValueSaveRequest, headers),
-                KeyValueSaveResponse::class.java,
-            )
-
-            responseEntity!!
-        } catch (e: Exception) {
-            logger.error { e.message }
-            throw RuntimeException(e.message)
+        if (masterNodeResponse?.statusCode?.is2xxSuccessful == true) {
+            otherNodes.forEach {
+                val mono = callKeyValueSave(it.getKey(), keyValueSaveRequest)
+                mono.subscribeOn(Schedulers.boundedElastic()).subscribe()
+            }
         }
+        return masterNodeResponse?.body!!
+    }
+
+    fun callKeyValueSave(
+        nodeIp: String,
+        keyValueSaveRequest: KeyValueSaveRequest,
+    ): Mono<ResponseEntity<KeyValueSaveResponse>> {
+        return webClient.mutate()
+            .baseUrl(nodeIp)
+            .build()
+            .post()
+            .bodyValue(keyValueSaveRequest)
+            .retrieve()
+            .toEntity(KeyValueSaveResponse::class.java)
     }
 
     fun get(key: String): KeyValueGetResponse {
@@ -48,7 +59,20 @@ class KeyValueProxyService(
         val nodeIp = instance.getKey()
 
         return try {
-            restTemplate.getForObject("$nodeIp?key=$key", KeyValueGetResponse::class.java)!!
+            val keyValueGetResponse = webClient.mutate()
+                .baseUrl(nodeIp)
+                .build()
+                .get()
+                .uri { uriBuilder: UriBuilder ->
+                    uriBuilder
+                        .queryParam("key", key)
+                        .build()
+                }
+                .retrieve()
+                .bodyToMono<KeyValueGetResponse>()
+                .block()
+
+            keyValueGetResponse!!
         } catch (e: Exception) {
             logger.error { e.message }
             throw RuntimeException(e.message)
