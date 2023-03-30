@@ -12,6 +12,7 @@ dependencies {
     implementation(project(":key-value-store"))
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
 
