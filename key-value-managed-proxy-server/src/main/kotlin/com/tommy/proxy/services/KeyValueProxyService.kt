@@ -1,13 +1,16 @@
 package com.tommy.proxy.services
 
+import com.tommy.proxy.config.KeyValueRoutesProperties
 import com.tommy.proxy.consistenthashing.ConsistentHashRouter
 import com.tommy.proxy.consistenthashing.node.Instance
 import com.tommy.proxy.dtos.KeyValueGetResponse
 import com.tommy.proxy.dtos.KeyValueSaveRequest
 import com.tommy.proxy.dtos.KeyValueSaveResponse
 import mu.KotlinLogging
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
 import org.springframework.web.util.UriBuilder
@@ -17,23 +20,24 @@ import reactor.core.scheduler.Schedulers
 @Service
 class KeyValueProxyService(
     private val webClient: WebClient,
+    private val keyValueRoutesProperties: KeyValueRoutesProperties,
 ) {
     private val logger = KotlinLogging.logger { }
 
     fun put(keyValueSaveRequest: KeyValueSaveRequest): KeyValueSaveResponse {
-        val masterNodeIp = node1.getKey()
+        val masterNodeIp = keyValueRoutesProperties.nodes.first()
 
-        val otherNodes = listOf(node1, node2, node3, node4)
-            .filterNot { it.getKey() == masterNodeIp }
+        val otherNodes = keyValueRoutesProperties.nodes
+            .filterNot { it == masterNodeIp }
             .toList()
 
-        val masterNodeResponse = callKeyValueSave(masterNodeIp, keyValueSaveRequest)
-            .block()
+        // TODO: Master 에서 장애 발생 시 이를 감지하여 다른 노드로 전송하도록 해야한다.
+        val masterNodeResponse = callKeyValueSave(masterNodeIp, keyValueSaveRequest).block()
 
         if (masterNodeResponse?.statusCode?.is2xxSuccessful == true) {
             otherNodes.forEach {
-                val mono = callKeyValueSave(it.getKey(), keyValueSaveRequest)
-                mono.subscribeOn(Schedulers.boundedElastic()).subscribe()
+                val mono = callKeyValueSave(it, keyValueSaveRequest)
+                mono.subscribeOn(Schedulers.boundedElastic()).subscribe { println("Call Node : $it") }
             }
         }
         return masterNodeResponse?.body!!
@@ -49,10 +53,15 @@ class KeyValueProxyService(
             .post()
             .bodyValue(keyValueSaveRequest)
             .retrieve()
+            .onStatus(
+                { httpStatusCode: HttpStatusCode? -> httpStatusCode?.is5xxServerError == true },
+                { response: ClientResponse -> Mono.error(Throwable("Internal Server Error - try again later")) },
+            )
             .toEntity(KeyValueSaveResponse::class.java)
     }
 
     fun get(key: String): KeyValueGetResponse {
+        val nodes = keyValueRoutesProperties.nodes.map { Instance(it) }
         val consistentHashRouter = ConsistentHashRouter(nodes, VIRTUAL_NODE_COUNT)
         val instance = consistentHashRouter.routeNode(key) ?: throw RuntimeException()
 
@@ -81,13 +90,5 @@ class KeyValueProxyService(
 
     companion object {
         private const val VIRTUAL_NODE_COUNT = 10
-
-        // TODO: 외부 인스턴스를 주입하도록 변경
-        private val node1 = Instance("127.0.0.1", 80)
-        private val node2 = Instance("127.0.0.2", 80)
-        private val node3 = Instance("127.0.0.3", 80)
-        private val node4 = Instance("127.0.0.4", 80)
-
-        private val nodes = listOf(node1, node2, node3, node4)
     }
 }
