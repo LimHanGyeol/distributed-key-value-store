@@ -21,8 +21,8 @@ class KeyValueProxyConfig {
     @Bean
     fun webClient(): WebClient {
         val httpClient = HttpClient.create()
-            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
-            .responseTimeout(Duration.ofMillis(5000L))
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 30000)
+            .responseTimeout(Duration.ofMillis(30000L))
             .doOnConnected { connection ->
                 connection
                     .addHandlerLast(ReadTimeoutHandler(30, TimeUnit.MILLISECONDS))
