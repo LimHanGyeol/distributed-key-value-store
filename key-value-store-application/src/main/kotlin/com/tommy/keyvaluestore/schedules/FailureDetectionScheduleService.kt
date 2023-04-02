@@ -1,6 +1,7 @@
 package com.tommy.keyvaluestore.schedules
 
 import java.net.InetAddress
+import java.time.Duration
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.redis.core.StringRedisTemplate
@@ -25,11 +26,12 @@ class FailureDetectionScheduleService(
     }
 
     private fun countHeartBeat(host: String) {
-        val redisKey = "$host:$port"
+        val redisKey = "node:$host:$port"
         val value = valueOperations.get(redisKey)
         if (value == null) {
-            valueOperations.set(redisKey, "0")
+            valueOperations.set(redisKey, "0", Duration.ofMinutes(1))
         }
+
         val heartBeatCount = valueOperations.increment(redisKey)
         valueOperations.set(redisKey, heartBeatCount.toString())
         logger.info { "redisKey: $redisKey, heartBeat Count is $heartBeatCount" }
