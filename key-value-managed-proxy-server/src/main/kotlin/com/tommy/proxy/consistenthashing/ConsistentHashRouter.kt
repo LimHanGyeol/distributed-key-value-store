@@ -12,7 +12,7 @@ class ConsistentHashRouter<T : Node>(
     virtualNodeCount: Int,
     private val hashFunction: HashFunction = MD5Hash(),
 ) {
-    private val hashRing: TreeMap<Long, VirtualNode<T>> = TreeMap()
+    private val hashRing: TreeMap<Int, VirtualNode<T>> = TreeMap()
 
     init {
         for (physicalNode in physicalNodes) {
@@ -33,7 +33,7 @@ class ConsistentHashRouter<T : Node>(
     }
 
     fun removeNode(physicalNode: T) {
-        val iterator: MutableIterator<Long> = hashRing.keys.iterator()
+        val iterator: MutableIterator<Int> = hashRing.keys.iterator()
         while (iterator.hasNext()) {
             val key = iterator.next()
             val virtualNode = hashRing[key]
@@ -50,7 +50,7 @@ class ConsistentHashRouter<T : Node>(
         }
 
         val hashValue = hashFunction.doHash(key)
-        val tailMap: SortedMap<Long, VirtualNode<T>> = hashRing.tailMap(hashValue)
+        val tailMap: SortedMap<Int, VirtualNode<T>> = hashRing.tailMap(hashValue)
 
         val nodeHashValue = if (tailMap.isNotEmpty()) {
             tailMap.firstKey()

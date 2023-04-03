@@ -14,6 +14,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
 
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
+    implementation("com.google.guava:guava:31.1-jre")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
