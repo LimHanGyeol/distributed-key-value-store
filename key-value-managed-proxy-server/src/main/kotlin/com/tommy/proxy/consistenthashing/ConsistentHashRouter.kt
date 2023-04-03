@@ -1,7 +1,7 @@
 package com.tommy.proxy.consistenthashing
 
 import com.tommy.proxy.consistenthashing.hash.HashFunction
-import com.tommy.proxy.consistenthashing.hash.MD5Hash
+import com.tommy.proxy.consistenthashing.hash.MurmurHash3
 import com.tommy.proxy.consistenthashing.node.Node
 import com.tommy.proxy.consistenthashing.node.VirtualNode
 import java.util.SortedMap
@@ -10,7 +10,7 @@ import java.util.TreeMap
 class ConsistentHashRouter<T : Node>(
     physicalNodes: List<T>,
     virtualNodeCount: Int,
-    private val hashFunction: HashFunction = MD5Hash(),
+    private val hashFunction: HashFunction = MurmurHash3(),
 ) {
     private val hashRing: TreeMap<Int, VirtualNode<T>> = TreeMap()
 
