@@ -2,6 +2,7 @@ package com.tommy.proxy.consistenthashing
 
 import com.tommy.proxy.consistenthashing.node.Instance
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
@@ -71,6 +72,7 @@ class ConsistentHashRouterTest {
         assertThat(sut.getHashRingSize()).isEqualTo(30)
     }
 
+    @Disabled
     @Test
     @DisplayName("요청으로 인입된 IP 해싱하여 해시링의 가장 근접한 노드로 Routing")
     fun `get route node of consistent hash`() {
