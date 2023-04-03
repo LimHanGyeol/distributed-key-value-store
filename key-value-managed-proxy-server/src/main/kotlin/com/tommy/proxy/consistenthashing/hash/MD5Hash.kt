@@ -6,7 +6,7 @@ class MD5Hash : HashFunction {
 
     private val instance: MessageDigest = MessageDigest.getInstance(HASH_ALGORITHM)
 
-    override fun doHash(key: String): Long {
+    override fun doHash(key: String, seed: Int?): Int {
         instance.reset()
 
         val keyToByte = key.byteInputStream()
@@ -20,7 +20,7 @@ class MD5Hash : HashFunction {
             hash = hash shl 8
             hash = hash or ((digest[i].toInt() and 0xFF))
         }
-        return hash.toLong()
+        return hash
     }
 
     companion object {
