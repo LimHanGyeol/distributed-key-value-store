@@ -2,6 +2,7 @@ package com.tommy.proxy.services
 
 import com.tommy.proxy.config.KeyValueRoutesProperties
 import com.tommy.proxy.consistenthashing.ConsistentHashRouter
+import com.tommy.proxy.consistenthashing.hash.MurmurHash3
 import com.tommy.proxy.consistenthashing.node.Instance
 import com.tommy.proxy.dtos.KeyValueGetResponse
 import com.tommy.proxy.dtos.KeyValueSaveRequest
@@ -62,7 +63,8 @@ class KeyValueProxyService(
 
     fun get(key: String): KeyValueGetResponse {
         val nodes = keyValueRoutesProperties.nodes.map { Instance(it) }
-        val consistentHashRouter = ConsistentHashRouter(nodes, VIRTUAL_NODE_COUNT)
+        val hashFunction = MurmurHash3()
+        val consistentHashRouter = ConsistentHashRouter(nodes, VIRTUAL_NODE_COUNT, hashFunction)
         val instance = consistentHashRouter.routeNode(key) ?: throw RuntimeException()
 
         val nodeIp = instance.getKey()
