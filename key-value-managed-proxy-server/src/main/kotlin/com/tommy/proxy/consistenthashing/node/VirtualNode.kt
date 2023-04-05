@@ -12,4 +12,8 @@ class VirtualNode<T : Node>(
     fun isVirtualNodeOf(physicalNode: T): Boolean {
         return this.physicalNode.getKey() == physicalNode.getKey()
     }
+
+    override fun toString(): String {
+        return "VirtualNode(physicalNode=$physicalNode, virtualIndex=$virtualIndex)"
+    }
 }
