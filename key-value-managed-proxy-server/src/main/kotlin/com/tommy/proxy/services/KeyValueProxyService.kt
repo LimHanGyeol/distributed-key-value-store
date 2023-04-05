@@ -1,9 +1,7 @@
 package com.tommy.proxy.services
 
-import com.tommy.proxy.config.KeyValueRoutesProperties
 import com.tommy.proxy.consistenthashing.ConsistentHashRouter
-import com.tommy.proxy.consistenthashing.hash.MurmurHash3
-import com.tommy.proxy.consistenthashing.node.Instance
+import com.tommy.proxy.consistenthashing.hash.HashFunction
 import com.tommy.proxy.dtos.KeyValueGetResponse
 import com.tommy.proxy.dtos.KeyValueSaveRequest
 import com.tommy.proxy.dtos.KeyValueSaveResponse
@@ -17,15 +15,14 @@ import org.springframework.web.client.RestTemplate
 @Service
 class KeyValueProxyService(
     private val restTemplate: RestTemplate,
-    private val keyValueRoutesProperties: KeyValueRoutesProperties,
+    private val hashFunction: HashFunction,
+    private val consistentHashRouter: ConsistentHashRouter,
 ) {
     private val logger = KotlinLogging.logger { }
 
     fun put(keyValueSaveRequest: KeyValueSaveRequest): KeyValueSaveResponse {
-        val nodes = keyValueRoutesProperties.nodes.map { Instance(it) }
-        val hashFunction = MurmurHash3()
-        val consistentHashRouter = ConsistentHashRouter(nodes, VIRTUAL_NODE_COUNT, hashFunction)
-        val instance = consistentHashRouter.routeNode(keyValueSaveRequest.key) ?: throw RuntimeException()
+        val hashedKey = hashFunction.doHash(keyValueSaveRequest.key)
+        val instance = consistentHashRouter.routeNode(hashedKey)
 
         val nodeIp = instance.getKey()
 
@@ -47,10 +44,8 @@ class KeyValueProxyService(
     }
 
     fun get(key: String): KeyValueGetResponse {
-        val nodes = keyValueRoutesProperties.nodes.map { Instance(it) }
-        val hashFunction = MurmurHash3()
-        val consistentHashRouter = ConsistentHashRouter(nodes, VIRTUAL_NODE_COUNT, hashFunction)
-        val instance = consistentHashRouter.routeNode(key) ?: throw RuntimeException()
+        val hashedKey = hashFunction.doHash(key)
+        val instance = consistentHashRouter.routeNode(hashedKey)
 
         val nodeIp = instance.getKey()
 
@@ -60,9 +55,5 @@ class KeyValueProxyService(
             logger.error { e.message }
             throw RuntimeException(e.message)
         }
-    }
-
-    companion object {
-        private const val VIRTUAL_NODE_COUNT = 10
     }
 }
