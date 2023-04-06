@@ -6,9 +6,6 @@ import com.tommy.proxy.dtos.KeyValueGetResponse
 import com.tommy.proxy.dtos.KeyValueSaveRequest
 import com.tommy.proxy.dtos.KeyValueSaveResponse
 import mu.KotlinLogging
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
@@ -24,19 +21,10 @@ class KeyValueProxyService(
         val hashedKey = hashFunction.doHash(keyValueSaveRequest.key)
         val instance = consistentHashRouter.routeNode(hashedKey)
 
-        val nodeIp = instance.getKey()
-
         return try {
-            val headers = HttpHeaders()
-            headers.contentType = MediaType.APPLICATION_JSON
-
-            val responseEntity = restTemplate.postForObject(
-                nodeIp,
-                HttpEntity(keyValueSaveRequest, headers),
-                KeyValueSaveResponse::class.java,
-            )
-
-            responseEntity!!
+            val responseEntity =
+                restTemplate.postForEntity(instance.getKey(), keyValueSaveRequest, KeyValueSaveResponse::class.java)
+            responseEntity.body!!
         } catch (e: Exception) {
             logger.error { e.message }
             throw RuntimeException(e.message)
