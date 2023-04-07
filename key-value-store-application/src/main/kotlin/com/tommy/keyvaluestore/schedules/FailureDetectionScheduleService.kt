@@ -1,13 +1,13 @@
 package com.tommy.keyvaluestore.schedules
 
-import java.net.InetAddress
-import java.time.Duration
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.core.ValueOperations
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
+import java.net.InetAddress
+import java.time.Duration
 
 @Service
 class FailureDetectionScheduleService(
