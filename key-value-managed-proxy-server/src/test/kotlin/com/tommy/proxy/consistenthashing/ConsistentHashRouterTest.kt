@@ -74,7 +74,7 @@ class ConsistentHashRouterTest {
     }
 
     @Test
-    @DisplayName("요청으로 인입된 Key 를 해싱하여 해시링의 가장 근접한 노드로 Routing")
+    @DisplayName("요청으로 인입된 Key 를 해싱하여 해시링의 가장 근접한 노드로 Routing 한다.")
     fun `get route node of consistent hash`() {
         // Arrange
         val key = "80a53953-3560-45f0-97f7-384155ff0d06"
@@ -89,5 +89,25 @@ class ConsistentHashRouterTest {
         // 가장 가까운 노드의 hash 값: 860206175
         // 가장 가까운 노드 정보: VirtualNode(physicalNode=http://localhost:8082, virtualIndex=4)
         assertThat(actual.getKey()).isEqualTo("http://localhost:8082")
+    }
+
+    @Test
+    @DisplayName("요청으로 인입된 Key 를 해싱하여 Primary 노드 외 다른 노드에게 Routing 한다.")
+    fun `get route other node of consistent hash`() { // Arrange
+        val key = "80a53953-3560-45f0-97f7-384155ff0d06"
+        val seed = 0
+
+        val primaryNode = Instance("http://localhost:8082")
+
+        // Act
+        val hashedKey = sut.hashFunction.doHash(key, seed)
+        val actual = sut.routeOtherNode(hashedKey, primaryNode)
+
+        // Assert
+        // hashedKey: 7148784698
+        // 가장 가까운 노드의 hash 값: 860206175 (http://localhost:8082)
+        // 두 번째 가까운 노드의 hash 값: 864546745
+        // 두 번째 가까운 노드의 정보: VirtualNode(physicalNode=http://localhost:8081, virtualIndex=9)
+        assertThat(actual.getKey()).isEqualTo("http://localhost:8081")
     }
 }
