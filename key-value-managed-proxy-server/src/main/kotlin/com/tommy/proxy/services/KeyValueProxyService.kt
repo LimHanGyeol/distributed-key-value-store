@@ -1,7 +1,6 @@
 package com.tommy.proxy.services
 
 import com.tommy.proxy.consistenthashing.ConsistentHashRouter
-import com.tommy.proxy.consistenthashing.hash.HashFunction
 import com.tommy.proxy.dtos.KeyValueGetResponse
 import com.tommy.proxy.dtos.KeyValueSaveRequest
 import com.tommy.proxy.dtos.KeyValueSaveResponse
@@ -12,19 +11,25 @@ import org.springframework.web.client.RestTemplate
 @Service
 class KeyValueProxyService(
     private val restTemplate: RestTemplate,
-    private val hashFunction: HashFunction,
     private val consistentHashRouter: ConsistentHashRouter,
+    private val keyValueConsistentService: KeyValueConsistentService,
 ) {
     private val logger = KotlinLogging.logger { }
 
     fun put(keyValueSaveRequest: KeyValueSaveRequest): KeyValueSaveResponse {
+        val hashFunction = consistentHashRouter.hashFunction
         val hashedKey = hashFunction.doHash(keyValueSaveRequest.key)
-        val instance = consistentHashRouter.routeNode(hashedKey)
+        val primaryNode = consistentHashRouter.routeNode(hashedKey)
 
         return try {
-            val responseEntity =
-                restTemplate.postForEntity(instance.getKey(), keyValueSaveRequest, KeyValueSaveResponse::class.java)
-            responseEntity.body!!
+            val response =
+                restTemplate.postForEntity(primaryNode.getKey(), keyValueSaveRequest, KeyValueSaveResponse::class.java)
+
+            if (response.statusCode.is2xxSuccessful) {
+                keyValueConsistentService.consistentKeyValue(keyValueSaveRequest, primaryNode)
+            }
+
+            response.body!!
         } catch (e: Exception) {
             logger.error { e.message }
             throw RuntimeException(e.message)
@@ -32,6 +37,7 @@ class KeyValueProxyService(
     }
 
     fun get(key: String): KeyValueGetResponse {
+        val hashFunction = consistentHashRouter.hashFunction
         val hashedKey = hashFunction.doHash(key)
         val instance = consistentHashRouter.routeNode(hashedKey)
 
