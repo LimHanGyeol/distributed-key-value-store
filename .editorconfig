@@ -9,6 +9,7 @@ insert_final_newline = true
 end_of_line = lf
 trim_trailing_whitespace = true
 tab_width = 4
+ij_continuation_indent_size = 4
 
 [.editorconfig]
 ij_editorconfig_align_group_field_declarations = false
@@ -70,7 +71,7 @@ ij_kotlin_field_annotation_wrap = split_into_lines
 ij_kotlin_finally_on_new_line = false
 ij_kotlin_if_rparen_on_new_line = true
 ij_kotlin_import_nested_classes = false
-ij_kotlin_imports_layout=*,java.**,javax.**,jakarta.**,kotlin.**,^ # default IntelliJ IDEA style, same as alphabetical, but with "java", "javax", "kotlin" and alias imports in the end of the imports list
+ij_kotlin_imports_layout = *,java.**,javax.**,jakarta.**,kotlin.**,^ # default IntelliJ IDEA style, same as alphabetical, but with "java", "javax", "kotlin" and alias imports in the end of the imports list
 # java, javax, jakarta, kotlin 순으로 import 정렬
 ij_kotlin_packages_to_use_import_on_demand = unset # no-wildcard-import
 ij_kotlin_insert_whitespaces_in_simple_one_line_method = true
@@ -78,7 +79,7 @@ ij_kotlin_insert_whitespaces_in_simple_one_line_method = true
 ij_kotlin_keep_blank_lines_before_right_brace = 2
 ij_kotlin_keep_blank_lines_in_code = 2
 ij_kotlin_keep_blank_lines_in_declarations = 2
-ij_kotlin_keep_first_column_comment = false
+ij_kotlin_keep_first_column_comment = true
 ij_kotlin_keep_indents_on_empty_lines = false
 ij_kotlin_keep_line_breaks = false # // ktlint-disable max-line-length 를 붙이지 않아도 한줄에 작성한 코드를 reformatting 하지 않음
 
@@ -86,7 +87,7 @@ ij_kotlin_lbrace_on_next_line = false
 
 ij_kotlin_line_comment_add_space = false
 ij_kotlin_line_comment_add_space_on_reformat = false
-ij_kotlin_line_comment_at_first_column = false # 투두 주석을 쓸 때 줄바꿈을 하지 않음
+ij_kotlin_line_comment_at_first_column = true # 투두 주석을 쓸 때 줄바꿈을 하지 않음
 
 ij_kotlin_method_annotation_wrap = split_into_lines
 ij_kotlin_method_call_chain_wrap = normal
