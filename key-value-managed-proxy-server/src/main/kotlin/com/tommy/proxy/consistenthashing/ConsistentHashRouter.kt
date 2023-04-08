@@ -5,10 +5,10 @@ import com.tommy.proxy.consistenthashing.hash.HashFunction
 import com.tommy.proxy.consistenthashing.node.Instance
 import com.tommy.proxy.consistenthashing.node.Node
 import com.tommy.proxy.consistenthashing.node.VirtualNode
-import java.util.SortedMap
-import java.util.TreeMap
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import java.util.SortedMap
+import java.util.TreeMap
 
 @Component
 class ConsistentHashRouter(
@@ -67,6 +67,28 @@ class ConsistentHashRouter(
             ?: throw IllegalStateException("not found exist node. hashed node value is $hashedNodeValue")
 
         return virtualNode.physicalNode
+    }
+
+    fun routeOtherNode(hashedKey: Int, primaryNode: Node): Node {
+        if (hashRing.isEmpty()) {
+            throw IllegalStateException("hashRing is Empty !")
+        }
+
+        val tailMap: SortedMap<Int, VirtualNode<Node>> = hashRing.tailMap(hashedKey)
+
+        val iterator = tailMap.keys.iterator()
+        while (iterator.hasNext()) {
+            val key = iterator.next()
+
+            val virtualNode =
+                hashRing[key] ?: throw IllegalStateException("not found exist node. hashed node value is $key")
+
+            if (virtualNode.isVirtualNodeOf(primaryNode)) {
+                continue
+            }
+            return virtualNode.physicalNode
+        }
+        throw IllegalStateException("no matching virtual node found !")
     }
 
     private fun getExistingVirtualIndex(physicalNode: Node): Int =
