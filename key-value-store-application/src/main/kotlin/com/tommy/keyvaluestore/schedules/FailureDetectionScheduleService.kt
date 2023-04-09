@@ -1,39 +1,75 @@
 package com.tommy.keyvaluestore.schedules
 
+import com.tommy.keyvaluestore.dtos.FailureNode
 import mu.KotlinLogging
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.core.ValueOperations
 import org.springframework.scheduling.annotation.Scheduled
-import org.springframework.stereotype.Service
-import java.net.InetAddress
+import org.springframework.stereotype.Component
 import java.time.Duration
 
-@Service
+@Component
 class FailureDetectionScheduleService(
-    @Value("\${server.port}")
-    val port: Int,
+    val hostAddress: String,
     redisTemplate: StringRedisTemplate,
 ) {
     private val logger = KotlinLogging.logger { }
     private val valueOperations: ValueOperations<String, String> = redisTemplate.opsForValue()
+    private val membership = mutableMapOf<String, Int>()
 
-    @Scheduled(initialDelay = 10000, fixedDelay = 10000)
+    @Scheduled(cron = "0/5 * * * * ?")
     fun execute() {
         logger.info { "run failure detection schedule" }
-        val host = InetAddress.getLocalHost().hostAddress
-        countHeartBeat(host)
+        countMyHeartBeat(hostAddress)
+        initMembership()
+
+        val failureNodes = searchFailureNode()
+        failureNodes.filter { it.failureNodeCount > 1 }.forEach {
+            // TODO: Proxy에 장애 처리 API 요청
+        }
     }
 
-    private fun countHeartBeat(host: String) {
-        val redisKey = "node:$host:$port"
+    private fun countMyHeartBeat(hostAddress: String) {
+        val redisKey = "node:$hostAddress"
         val value = valueOperations.get(redisKey)
-        if (value == null) {
+        if (value == null || value.toInt() == Int.MAX_VALUE) {
             valueOperations.set(redisKey, "0", Duration.ofMinutes(1))
         }
 
         val heartBeatCount = valueOperations.increment(redisKey)
         valueOperations.set(redisKey, heartBeatCount.toString())
         logger.info { "redisKey: $redisKey, heartBeat Count is $heartBeatCount" }
+    }
+
+    private fun initMembership() {
+        val remoteNodes = valueOperations.operations.keys("node*") ?: throw RuntimeException()
+        logger.info { "search result: $remoteNodes" }
+        if (remoteNodes.isNotEmpty()) {
+            for (node in remoteNodes) {
+                val heartBeat = valueOperations.get(node)!!
+                membership[node] = heartBeat.toInt()
+            }
+        }
+    }
+
+    private fun searchFailureNode(): List<FailureNode> {
+        var failureNodeCount = 0
+        val failureNodes = mutableListOf<FailureNode>()
+
+        val remoteNodes = valueOperations.operations.keys("node*") ?: throw RuntimeException()
+        logger.info { "search result: $remoteNodes" }
+
+        if (remoteNodes.isNotEmpty()) {
+            for (node in remoteNodes) {
+                val memberHeartBeat = membership[node]
+                val remoteNodeHeartBeat = valueOperations.get(node) ?: "0"
+                if (memberHeartBeat != remoteNodeHeartBeat.toInt()) {
+                    failureNodeCount++
+                }
+                failureNodes.add(FailureNode(node.removePrefix("node:"), failureNodeCount))
+                membership[node] = remoteNodeHeartBeat.toInt()
+            }
+        }
+        return failureNodes
     }
 }
