@@ -30,7 +30,7 @@ class ConsistentHashRouter(
         if (virtualNodeCount < 0) {
             throw IllegalArgumentException("invalid virtual node counts: $virtualNodeCount")
         }
-        val existingReplicas = getExistingVirtualIndex(physicalNode)
+        val existingReplicas = getExistingVirtualNodeCount(physicalNode)
         for (i in 0 until virtualNodeCount) {
             val virtualNode = VirtualNode(physicalNode, i + existingReplicas)
             val hashedKey = hashFunction.doHash(virtualNode.getKey(), seed)
@@ -91,8 +91,7 @@ class ConsistentHashRouter(
         throw IllegalStateException("no matching virtual node found !")
     }
 
-    private fun getExistingVirtualIndex(physicalNode: Node): Int =
-        hashRing.values.count { it.isVirtualNodeOf(physicalNode) }
+    fun getExistingVirtualNodeCount(physicalNode: Node): Int = hashRing.values.count { it.isVirtualNodeOf(physicalNode) }
 
     fun getHashRingSize(): Int = hashRing.size
 }
