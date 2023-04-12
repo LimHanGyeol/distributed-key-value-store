@@ -38,6 +38,7 @@ class FaultNodeServiceTest(
         every { redissonClient.getLock(faultNodeRequest.address) } returns lock
         every { lock.tryLock(5, 6, TimeUnit.SECONDS) } returns true
         every { consistentHashRouter.getExistingVirtualNodeCount(faultNode) } returns 1
+        justRun { consistentHashRouter.replicateHashRing() }
         justRun { consistentHashRouter.removeNode(faultNode) }
         justRun { lock.unlock() }
 
@@ -49,6 +50,7 @@ class FaultNodeServiceTest(
             redissonClient.getLock(faultNodeRequest.address)
             lock.tryLock(5, 6, TimeUnit.SECONDS)
             consistentHashRouter.getExistingVirtualNodeCount(faultNode)
+            consistentHashRouter.replicateHashRing()
             consistentHashRouter.removeNode(faultNode)
             lock.unlock()
         }

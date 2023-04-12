@@ -17,7 +17,8 @@ class ConsistentHashRouter(
     val keyValueRoutesProperties: KeyValueRoutesProperties,
     val hashFunction: HashFunction,
 ) {
-    val hashRing: TreeMap<Int, VirtualNode<Node>> = TreeMap()
+    val originHashRing: TreeMap<Int, VirtualNode<Node>> = TreeMap()
+    lateinit var replicaHashRing: TreeMap<Int, VirtualNode<Node>>
 
     fun initNodes(seed: Int? = null) {
         val physicalNodes: List<Node> = keyValueRoutesProperties.nodes.map { Instance(it) }
@@ -34,15 +35,15 @@ class ConsistentHashRouter(
         for (i in 0 until virtualNodeCount) {
             val virtualNode = VirtualNode(physicalNode, i + existingReplicas)
             val hashedKey = hashFunction.doHash(virtualNode.getKey(), seed)
-            hashRing[hashedKey] = virtualNode
+            originHashRing[hashedKey] = virtualNode
         }
     }
 
     fun removeNode(physicalNode: Node) {
-        val iterator: MutableIterator<Int> = hashRing.keys.iterator()
+        val iterator: MutableIterator<Int> = originHashRing.keys.iterator()
         while (iterator.hasNext()) {
             val key = iterator.next()
-            val virtualNode = hashRing[key]
+            val virtualNode = originHashRing[key]
 
             if (virtualNode?.isVirtualNodeOf(physicalNode) == true) {
                 iterator.remove()
@@ -51,37 +52,37 @@ class ConsistentHashRouter(
     }
 
     fun routeNode(hashedKey: Int): Node {
-        if (hashRing.isEmpty()) {
+        if (originHashRing.isEmpty()) {
             throw IllegalStateException("hashRing is Empty !")
         }
 
-        val tailMap: SortedMap<Int, VirtualNode<Node>> = hashRing.tailMap(hashedKey)
+        val tailMap: SortedMap<Int, VirtualNode<Node>> = originHashRing.tailMap(hashedKey)
 
         val hashedNodeValue = if (tailMap.isNotEmpty()) {
             tailMap.firstKey()
         } else {
-            hashRing.firstKey()
+            originHashRing.firstKey()
         }
 
-        val virtualNode = hashRing[hashedNodeValue]
+        val virtualNode = originHashRing[hashedNodeValue]
             ?: throw IllegalStateException("not found exist node. hashed node value is $hashedNodeValue")
 
         return virtualNode.physicalNode
     }
 
     fun routeOtherNode(hashedKey: Int, primaryNode: Node): Node {
-        if (hashRing.isEmpty()) {
+        if (originHashRing.isEmpty()) {
             throw IllegalStateException("hashRing is Empty !")
         }
 
-        val tailMap: SortedMap<Int, VirtualNode<Node>> = hashRing.tailMap(hashedKey)
+        val tailMap: SortedMap<Int, VirtualNode<Node>> = originHashRing.tailMap(hashedKey)
 
         val iterator = tailMap.keys.iterator()
         while (iterator.hasNext()) {
             val key = iterator.next()
 
             val virtualNode =
-                hashRing[key] ?: throw IllegalStateException("not found exist node. hashed node value is $key")
+                originHashRing[key] ?: throw IllegalStateException("not found exist node. hashed node value is $key")
 
             if (virtualNode.isVirtualNodeOf(primaryNode)) {
                 continue
@@ -91,7 +92,15 @@ class ConsistentHashRouter(
         throw IllegalStateException("no matching virtual node found !")
     }
 
-    fun getExistingVirtualNodeCount(physicalNode: Node): Int = hashRing.values.count { it.isVirtualNodeOf(physicalNode) }
+    fun replicateHashRing() {
+        replicaHashRing = TreeMap(originHashRing)
+    }
 
-    fun getHashRingSize(): Int = hashRing.size
+    fun getExistingVirtualNodeCount(physicalNode: Node): Int = originHashRing.values.count {
+        it.isVirtualNodeOf(
+            physicalNode,
+        )
+    }
+
+    fun getHashRingSize(): Int = originHashRing.size
 }
