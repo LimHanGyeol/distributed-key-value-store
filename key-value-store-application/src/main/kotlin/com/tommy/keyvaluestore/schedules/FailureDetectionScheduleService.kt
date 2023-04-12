@@ -6,11 +6,13 @@ import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.core.ValueOperations
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+import org.springframework.web.client.RestTemplate
 import java.time.Duration
 
 @Component
 class FailureDetectionScheduleService(
-    val hostAddress: String,
+    private val hostAddress: String,
+    private val restTemplate: RestTemplate,
     redisTemplate: StringRedisTemplate,
 ) {
     private val logger = KotlinLogging.logger { }
@@ -25,7 +27,7 @@ class FailureDetectionScheduleService(
 
         val failureNodes = searchFailureNode()
         failureNodes.filter { it.failureNodeCount > 1 }.forEach {
-            // TODO: Proxy에 장애 처리 API 요청
+            restTemplate.postForObject("http://localhost:9090/fault-node", it, Unit::class.java)
         }
     }
 

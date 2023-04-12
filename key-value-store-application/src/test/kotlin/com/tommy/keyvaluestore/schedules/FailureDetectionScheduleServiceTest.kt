@@ -9,18 +9,20 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.core.ValueOperations
+import org.springframework.web.client.RestTemplate
 
 @ExtendWith(MockKExtension::class)
 class FailureDetectionScheduleServiceTest {
 
     private val redisTemplate: StringRedisTemplate = mockk(relaxed = true)
-    private val sut = FailureDetectionScheduleService("127.0.0.1:8080", redisTemplate)
+    private val restTemplate: RestTemplate = mockk()
+    private val sut = FailureDetectionScheduleService("127.0.0.1:8080", restTemplate, redisTemplate)
 
     @Test
     @DisplayName("정해진 크론식 시간주기로 노드의 HeartBeat 를 계산하여 장애 감지를 한다.")
     fun `sut should update heartBeat count when at fixed times`() {
         // Arrange
-        val redisKey = "node:${sut.hostAddress}"
+        val redisKey = "node:127.0.0.1:8080"
         val heartBeatCount = 1L
 
         val valueOperations: ValueOperations<String, String> = redisTemplate.opsForValue()
@@ -37,9 +39,9 @@ class FailureDetectionScheduleServiceTest {
 
         // Assert
         verifyAll {
-            valueOperations.get("node:${sut.hostAddress}")
-            valueOperations.increment("node:${sut.hostAddress}")
-            valueOperations.set("node:${sut.hostAddress}", any())
+            valueOperations.get("node:127.0.0.1:8080")
+            valueOperations.increment("node:127.0.0.1:8080")
+            valueOperations.set("node:127.0.0.1:8080", any())
             valueOperations.operations.keys("node*")
         }
     }
