@@ -3,6 +3,7 @@ package com.tommy.proxy.services
 import com.tommy.proxy.consistenthashing.ConsistentHashRouter
 import com.tommy.proxy.consistenthashing.node.Instance
 import com.tommy.proxy.dtos.FaultNodeRequest
+import com.tommy.proxy.exceptions.LockProcessFailedException
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -12,6 +13,7 @@ import io.mockk.verify
 import io.mockk.verifyAll
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.redisson.api.RLock
 import org.redisson.api.RedissonClient
@@ -53,7 +55,7 @@ class FaultNodeServiceTest(
     }
 
     @Test
-    @DisplayName("이미 장애처리가 된 노드일 경우 Exception 을 발생한다.")
+    @DisplayName("이미 장애처리가 된 노드일 경우 LockProcessFailedException 을 발생한다.")
     fun `sut throw an exception when already handled fault node`() {
         // Arrange
         val faultNodeRequest = FaultNodeRequest("http://localhost:8081", 1)
@@ -64,10 +66,8 @@ class FaultNodeServiceTest(
         every { consistentHashRouter.getExistingVirtualNodeCount(faultNode) } returns 0
         justRun { lock.unlock() }
 
-        // Act
-        sut.handleFaultNode(faultNodeRequest)
-
-        // Assert
+        // Act & Assert
+        assertThrows<LockProcessFailedException> { sut.handleFaultNode(faultNodeRequest) }
         verify { redissonClient.getLock(faultNodeRequest.address) }
         verify { lock.tryLock(5, 6, TimeUnit.SECONDS) }
         verify { consistentHashRouter.getExistingVirtualNodeCount(faultNode) }
@@ -76,7 +76,7 @@ class FaultNodeServiceTest(
     }
 
     @Test
-    @DisplayName("잠금을 획득하지 못했을 경우 Exception 을 발생한다.")
+    @DisplayName("잠금을 획득하지 못했을 경우 LockProcessFailedException 을 발생한다.")
     fun `sut throws an exception when lock not acquired`() {
         // Arrange
         val faultNodeRequest = FaultNodeRequest("http://localhost:8081", 1)
@@ -86,11 +86,9 @@ class FaultNodeServiceTest(
         every { lock.tryLock(5, 6, TimeUnit.SECONDS) } returns false
         justRun { lock.unlock() }
 
-        // Act
-        sut.handleFaultNode(faultNodeRequest)
-
-        // Assert
-        redissonClient.getLock(faultNodeRequest.address)
+        // Act & Assert
+        assertThrows<LockProcessFailedException> { sut.handleFaultNode(faultNodeRequest) }
+        verify { redissonClient.getLock(faultNodeRequest.address) }
         verify { lock.tryLock(5, 6, TimeUnit.SECONDS) }
         verify(exactly = 0) { consistentHashRouter.getExistingVirtualNodeCount(faultNode) }
         verify(exactly = 0) { consistentHashRouter.removeNode(faultNode) }
