@@ -111,4 +111,18 @@ class ConsistentHashRouterTest {
         // 두 번째 가까운 노드의 정보: VirtualNode(physicalNode=http://localhost:8081, virtualIndex=9)
         assertThat(actual.getKey()).isEqualTo("http://localhost:8081")
     }
+
+    @Test
+    @DisplayName("원본 해시링을 복제하여 데이터를 동기화한다.")
+    fun `replicate hash ring`() {
+        // Arrange
+
+        // Act
+        sut.replicateHashRing()
+        sut.removeNode(Instance("http://localhost:8081"))
+
+        // Assert
+        assertThat(sut.getHashRingSize()).isEqualTo(30)
+        assertThat(sut.replicaHashRing.size).isEqualTo(40)
+    }
 }

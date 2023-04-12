@@ -32,7 +32,7 @@ class FaultNodeService(
             if (existingVirtualNodeCount == 0) {
                 throw AlreadyProcessedLockException("이미 처리된 요청($faultNodeRequest)")
             }
-
+            consistentHashRouter.replicateHashRing()
             consistentHashRouter.removeNode(faultNode)
             return
         } catch (e: Exception) {
