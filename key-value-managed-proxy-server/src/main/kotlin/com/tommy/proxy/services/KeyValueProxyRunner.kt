@@ -17,6 +17,6 @@ class KeyValueProxyRunner(
 
     override fun run(args: ApplicationArguments?) {
         consistentHashRouter.initNodes(port)
-        logger.info { "consistentHashRouter init nodes, hashring Size: ${consistentHashRouter.getHashRingSize()}" }
+        logger.info { "consistentHashRouter init nodes, hashring Size: ${consistentHashRouter.getOriginHashRingSize()}" }
     }
 }

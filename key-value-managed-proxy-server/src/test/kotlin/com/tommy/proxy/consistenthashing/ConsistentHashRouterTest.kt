@@ -42,8 +42,7 @@ class ConsistentHashRouterTest {
         val actual = sut
 
         // Assert
-        assertThat(actual.getHashRingSize()).isEqualTo(40)
-        assertThat(actual.hashFunction).isInstanceOf(MurmurHash3::class.java)
+        assertThat(actual.getOriginHashRingSize()).isEqualTo(40)
     }
 
     @Test
@@ -57,7 +56,7 @@ class ConsistentHashRouterTest {
         sut.addNode(targetPhysicalNode, virtualNodeCount)
 
         // Assert
-        assertThat(sut.getHashRingSize()).isEqualTo(50)
+        assertThat(sut.getOriginHashRingSize()).isEqualTo(50)
     }
 
     @Test
@@ -70,7 +69,7 @@ class ConsistentHashRouterTest {
         sut.removeNode(targetPhysicalNode)
 
         // Assert
-        assertThat(sut.getHashRingSize()).isEqualTo(30)
+        assertThat(sut.getOriginHashRingSize()).isEqualTo(30)
     }
 
     @Test
@@ -81,7 +80,7 @@ class ConsistentHashRouterTest {
         val seed = 0
 
         // Act
-        val hashedKey = sut.hashFunction.doHash(key, seed)
+        val hashedKey = sut.doHash(key, seed)
         val actual = sut.routeNode(hashedKey)
 
         // Assert
@@ -101,7 +100,7 @@ class ConsistentHashRouterTest {
         val primaryNode = Instance("http://localhost:8082")
 
         // Act
-        val hashedKey = sut.hashFunction.doHash(key, seed)
+        val hashedKey = sut.doHash(key, seed)
         val actual = sut.routeOtherNode(hashedKey, primaryNode)
 
         // Assert
@@ -122,7 +121,7 @@ class ConsistentHashRouterTest {
         sut.removeNode(Instance("http://localhost:8081"))
 
         // Assert
-        assertThat(sut.getHashRingSize()).isEqualTo(30)
-        assertThat(sut.replicaHashRing.size).isEqualTo(40)
+        assertThat(sut.getOriginHashRingSize()).isEqualTo(30)
+        assertThat(sut.getReplicaHashRingSize()).isEqualTo(40)
     }
 }

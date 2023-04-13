@@ -12,13 +12,12 @@ import java.util.TreeMap
 
 @Component
 class ConsistentHashRouter(
-    @Value("\${key-value.virtual-node-count:0}")
-    val virtualNodeCount: Int,
-    val keyValueRoutesProperties: KeyValueRoutesProperties,
-    val hashFunction: HashFunction,
+    @Value("\${key-value.virtual-node-count:0}") private val virtualNodeCount: Int,
+    private val keyValueRoutesProperties: KeyValueRoutesProperties,
+    private val hashFunction: HashFunction,
 ) {
-    val originHashRing: TreeMap<Int, VirtualNode<Node>> = TreeMap()
-    lateinit var replicaHashRing: TreeMap<Int, VirtualNode<Node>>
+    private val originHashRing: TreeMap<Int, VirtualNode<Node>> = TreeMap()
+    private lateinit var replicaHashRing: TreeMap<Int, VirtualNode<Node>>
 
     fun initNodes(seed: Int? = null) {
         val physicalNodes: List<Node> = keyValueRoutesProperties.nodes.map { Instance(it) }
@@ -102,5 +101,9 @@ class ConsistentHashRouter(
         )
     }
 
-    fun getHashRingSize(): Int = originHashRing.size
+    fun doHash(key: String, seed: Int?): Int = hashFunction.doHash(key, seed)
+
+    fun getOriginHashRingSize(): Int = originHashRing.size
+
+    fun getReplicaHashRingSize(): Int = replicaHashRing.size
 }

@@ -1,13 +1,11 @@
 package com.tommy.proxy.services
 
 import com.tommy.proxy.consistenthashing.ConsistentHashRouter
-import com.tommy.proxy.consistenthashing.hash.MurmurHash3
 import com.tommy.proxy.consistenthashing.node.Instance
 import com.tommy.proxy.dtos.KeyValueGetResponse
 import com.tommy.proxy.dtos.KeyValueSaveRequest
 import com.tommy.proxy.dtos.KeyValueSaveResponse
 import io.mockk.every
-import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.justRun
@@ -27,8 +25,14 @@ class KeyValueProxyServiceTest(
     @MockK private val keyValueConsistentService: KeyValueConsistentService,
 ) {
 
-    @InjectMockKs
-    private lateinit var sut: KeyValueProxyService
+    private val sut: KeyValueProxyService by lazy {
+        KeyValueProxyService(
+            port = 9090,
+            restTemplate = restTemplate,
+            consistentHashRouter = consistentHashRouter,
+            keyValueConsistentService = keyValueConsistentService,
+        )
+    }
 
     @Test
     @DisplayName("keyValueSaveRequest 가 주어질 경우 Key 를 분산하여 노드에 저장하고 KeyValueSaveResponse를 응답한다.")
@@ -38,8 +42,7 @@ class KeyValueProxyServiceTest(
         val hashedKey = 714878469
         val primaryNode = Instance("http://localhost:8082")
 
-        every { consistentHashRouter.hashFunction } returns MurmurHash3()
-        every { consistentHashRouter.hashFunction.doHash(request.key, any()) } returns hashedKey
+        every { consistentHashRouter.doHash(request.key, any()) } returns hashedKey
         every { consistentHashRouter.routeNode(hashedKey) } returns primaryNode
         every {
             restTemplate.postForEntity(eq(primaryNode.getKey()), request, KeyValueSaveResponse::class.java)
@@ -54,8 +57,7 @@ class KeyValueProxyServiceTest(
         assertThat(actual.key).isEqualTo(request.key)
 
         verifyAll {
-            consistentHashRouter.hashFunction
-            consistentHashRouter.hashFunction.doHash(request.key, any())
+            consistentHashRouter.doHash(request.key, any())
             consistentHashRouter.routeNode(hashedKey)
             restTemplate.postForEntity(eq(primaryNode.getKey()), request, KeyValueSaveResponse::class.java)
             keyValueConsistentService.consistentKeyValue(request, primaryNode)
@@ -70,8 +72,7 @@ class KeyValueProxyServiceTest(
         val hashedKey = 714878469
         val primaryNode = Instance("http://localhost:8082")
 
-        every { consistentHashRouter.hashFunction } returns MurmurHash3()
-        every { consistentHashRouter.hashFunction.doHash(request.key, any()) } returns hashedKey
+        every { consistentHashRouter.doHash(request.key, any()) } returns hashedKey
         every { consistentHashRouter.routeNode(hashedKey) } returns primaryNode
         every {
             restTemplate.postForEntity(eq(primaryNode.getKey()), request, KeyValueSaveResponse::class.java)
@@ -81,8 +82,7 @@ class KeyValueProxyServiceTest(
         assertThrows<RuntimeException> { sut.put(request) }
 
         verifyAll {
-            consistentHashRouter.hashFunction
-            consistentHashRouter.hashFunction.doHash(request.key, any())
+            consistentHashRouter.doHash(request.key, any())
             consistentHashRouter.routeNode(hashedKey)
             restTemplate.postForEntity(eq(primaryNode.getKey()), request, KeyValueSaveResponse::class.java)
         }
@@ -97,8 +97,7 @@ class KeyValueProxyServiceTest(
         val instance = Instance("http://localhost:8082")
         val url = "${instance.getKey()}?key=$key"
 
-        every { consistentHashRouter.hashFunction } returns MurmurHash3()
-        every { consistentHashRouter.hashFunction.doHash(key, any()) } returns hashedKey
+        every { consistentHashRouter.doHash(key, any()) } returns hashedKey
         every { consistentHashRouter.routeNode(hashedKey) } returns instance
         every {
             restTemplate.getForObject(url, KeyValueGetResponse::class.java)
@@ -111,8 +110,7 @@ class KeyValueProxyServiceTest(
         assertThat(actual.value).isEqualTo("value")
 
         verifyAll {
-            consistentHashRouter.hashFunction
-            consistentHashRouter.hashFunction.doHash(key, any())
+            consistentHashRouter.doHash(key, any())
             consistentHashRouter.routeNode(hashedKey)
             restTemplate.getForObject(url, KeyValueGetResponse::class.java)
         }
