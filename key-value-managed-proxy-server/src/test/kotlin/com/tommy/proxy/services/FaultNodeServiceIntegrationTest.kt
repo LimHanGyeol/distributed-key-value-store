@@ -25,7 +25,7 @@ class FaultNodeServiceIntegrationTest @Autowired constructor(
         val executorService = Executors.newFixedThreadPool(32)
         val countDownLatch = CountDownLatch(threadCount)
 
-        assertThat(consistentHashRouter.getHashRingSize()).isEqualTo(40)
+        assertThat(consistentHashRouter.getOriginHashRingSize()).isEqualTo(40)
         assertThat(consistentHashRouter.getExistingVirtualNodeCount(Instance(faultNodeRequest.address))).isEqualTo(10)
 
         // Act
@@ -42,7 +42,7 @@ class FaultNodeServiceIntegrationTest @Autowired constructor(
         countDownLatch.await()
 
         // Assert
-        assertThat(consistentHashRouter.getHashRingSize()).isEqualTo(30)
+        assertThat(consistentHashRouter.getOriginHashRingSize()).isEqualTo(30)
         assertThat(consistentHashRouter.getExistingVirtualNodeCount(Instance(faultNodeRequest.address))).isZero
     }
 }
