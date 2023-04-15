@@ -23,7 +23,7 @@ class KeyValueController(
         return keyValueService.put(keyValueSaveRequest)
     }
 
-    @GetMapping
+    @GetMapping("/")
     fun get(@RequestParam key: String): KeyValueGetResponse {
         return keyValueService.get(key)
     }
