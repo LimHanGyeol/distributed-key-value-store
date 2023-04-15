@@ -13,10 +13,9 @@ class MurmurHash3Test {
     fun `do hash by MurmurHash3`() {
         // Arrange
         val key = "127.0.0.1:8080-0"
-        val seed = 0
 
         // Act
-        val actual = sut.doHash(key, seed)
+        val actual = sut.doHash(key)
 
         // Assert
         assertThat(actual).isEqualTo(184398511)

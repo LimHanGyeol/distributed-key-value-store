@@ -19,21 +19,21 @@ class ConsistentHashRouter(
     private val originHashRing: TreeMap<Int, VirtualNode<Node>> = TreeMap()
     private lateinit var replicaHashRing: TreeMap<Int, VirtualNode<Node>>
 
-    fun initNodes(seed: Int? = null) {
+    fun initNodes() {
         val physicalNodes: List<Node> = keyValueRoutesProperties.nodes.map { Instance(it) }
         for (physicalNode in physicalNodes) {
-            addNode(physicalNode, virtualNodeCount, seed)
+            addNode(physicalNode, virtualNodeCount)
         }
     }
 
-    fun addNode(physicalNode: Node, virtualNodeCount: Int, seed: Int? = null) {
+    fun addNode(physicalNode: Node, virtualNodeCount: Int) {
         if (virtualNodeCount < 0) {
             throw IllegalArgumentException("invalid virtual node counts: $virtualNodeCount")
         }
         val existingReplicas = getExistingVirtualNodeCount(physicalNode)
         for (i in 0 until virtualNodeCount) {
             val virtualNode = VirtualNode(physicalNode, i + existingReplicas)
-            val hashedKey = hashFunction.doHash(virtualNode.getKey(), seed)
+            val hashedKey = hashFunction.doHash(virtualNode.getKey())
             originHashRing[hashedKey] = virtualNode
         }
     }
@@ -101,7 +101,7 @@ class ConsistentHashRouter(
         )
     }
 
-    fun doHash(key: String, seed: Int?): Int = hashFunction.doHash(key, seed)
+    fun doHash(key: String): Int = hashFunction.doHash(key)
 
     fun getOriginHashRingSize(): Int = originHashRing.size
 
