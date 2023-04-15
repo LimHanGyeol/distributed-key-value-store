@@ -9,3 +9,6 @@ key-value:
       - http://localhost:8082
       - http://localhost:8083
       - http://localhost:8084
+
+logging:
+  config: classpath:logback.xml
