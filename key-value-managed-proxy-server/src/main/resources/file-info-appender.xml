@@ -1,0 +1,26 @@
+<included>
+    <!-- RollingFileAppender 는 파일을 일정 조건에 맞게 따로 저장한다. -->
+    <appender name="FILE-INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>./log/info/info-${BY_DATE}.log</file> <!-- 파일을 저장할 경로 -->
+        <!-- INFO Level 일 때는 실행, 그 외에는 실행하지 않도록 filter 설정 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch> <!-- 해당 레벨만 기록한다 -->
+            <onMismatch>DENY</onMismatch>
+            <!-- 다른 수준의 레벨(상위 레벨 포함)은 기록하지 않는다. 상위 수준에 대한 기록을 원하면 ACCEPT 설정을 한다.-->
+        </filter>
+        <!-- encoder 는 로그 이벤트를 바이트 배열로 변환하고 해당 배열을 OutputStream 에 쓰는 작업을 한다. -->
+        <!-- appender 에 포함되어 사용자가 지정한 형식으로 표시될 로그메세지를 변환하는 역할을 담당한다. -->
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+        <!-- 파일 저장 정책 Size 와 시간을 가준으로 저장하는 정책 설정 -->
+        <!-- 파일 크기가 100MB 혹은 30일이 넘을 경우 인코딩한 파일을 gz 로 저장한다. -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>./backup/info/info-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+</included>
