@@ -7,13 +7,13 @@ import org.springframework.data.redis.core.ValueOperations
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
-import java.time.Duration
+import java.util.concurrent.TimeUnit
 
 @Component
 class FailureDetectionScheduleService(
     private val hostAddress: String,
     private val restTemplate: RestTemplate,
-    redisTemplate: StringRedisTemplate,
+    private val redisTemplate: StringRedisTemplate,
 ) {
     private val logger = KotlinLogging.logger { }
     private val valueOperations: ValueOperations<String, String> = redisTemplate.opsForValue()
@@ -35,11 +35,12 @@ class FailureDetectionScheduleService(
         val redisKey = "node:$hostAddress"
         val value = valueOperations.get(redisKey)
         if (value == null || value.toInt() == Int.MAX_VALUE) {
-            valueOperations.set(redisKey, "0", Duration.ofMinutes(1))
+            valueOperations.set(redisKey, "0")
         }
 
         val heartBeatCount = valueOperations.increment(redisKey)
         valueOperations.set(redisKey, heartBeatCount.toString())
+        redisTemplate.expire(redisKey, 10, TimeUnit.SECONDS)
         logger.info { "redisKey: $redisKey, heartBeat Count is $heartBeatCount" }
     }
 
