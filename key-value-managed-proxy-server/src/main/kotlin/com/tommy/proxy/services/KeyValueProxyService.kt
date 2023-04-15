@@ -5,13 +5,11 @@ import com.tommy.proxy.dtos.KeyValueGetResponse
 import com.tommy.proxy.dtos.KeyValueSaveRequest
 import com.tommy.proxy.dtos.KeyValueSaveResponse
 import mu.KotlinLogging
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
 @Service
 class KeyValueProxyService(
-    @Value("\${server.port}") private val port: Int,
     private val restTemplate: RestTemplate,
     private val consistentHashRouter: ConsistentHashRouter,
     private val keyValueConsistentService: KeyValueConsistentService,
@@ -19,7 +17,7 @@ class KeyValueProxyService(
     private val logger = KotlinLogging.logger { }
 
     fun put(keyValueSaveRequest: KeyValueSaveRequest): KeyValueSaveResponse {
-        val hashedKey = consistentHashRouter.doHash(keyValueSaveRequest.key, port)
+        val hashedKey = consistentHashRouter.doHash(keyValueSaveRequest.key)
         val primaryNode = consistentHashRouter.routeNode(hashedKey)
 
         return try {
@@ -38,7 +36,7 @@ class KeyValueProxyService(
     }
 
     fun get(key: String): KeyValueGetResponse {
-        val hashedKey = consistentHashRouter.doHash(key, port)
+        val hashedKey = consistentHashRouter.doHash(key)
         val instance = consistentHashRouter.routeNode(hashedKey)
 
         val nodeIp = instance.getKey()

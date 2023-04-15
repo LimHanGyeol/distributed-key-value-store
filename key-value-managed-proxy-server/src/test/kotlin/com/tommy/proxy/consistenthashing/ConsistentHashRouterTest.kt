@@ -30,7 +30,7 @@ class ConsistentHashRouterTest {
 
     @BeforeEach
     fun setUp() {
-        sut.initNodes(0)
+        sut.initNodes()
     }
 
     @Test
@@ -77,10 +77,9 @@ class ConsistentHashRouterTest {
     fun `get route node of consistent hash`() {
         // Arrange
         val key = "80a53953-3560-45f0-97f7-384155ff0d06"
-        val seed = 0
 
         // Act
-        val hashedKey = sut.doHash(key, seed)
+        val hashedKey = sut.doHash(key)
         val actual = sut.routeNode(hashedKey)
 
         // Assert
@@ -95,12 +94,11 @@ class ConsistentHashRouterTest {
     fun `get route other node of consistent hash`() {
         // Arrange
         val key = "80a53953-3560-45f0-97f7-384155ff0d06"
-        val seed = 0
 
         val primaryNode = Instance("http://localhost:8082")
 
         // Act
-        val hashedKey = sut.doHash(key, seed)
+        val hashedKey = sut.doHash(key)
         val actual = sut.routeOtherNode(hashedKey, primaryNode)
 
         // Assert
