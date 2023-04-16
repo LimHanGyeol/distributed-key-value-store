@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 5s # 5초마다 매트릭을 수집 default 1분
+  evaluation_interval: 30s # 30초마다 규칙을 평가 default 1분
+
+  external_labels: # 외부 시스템에 표시할 이 서버의 레이블
+    monitor: 'key-value-store-monitoring'
+
+scrape_configs:
+  - job_name: 'monitoring-app' # 잡 이름
+    metrics_path: '/actuator/prometheus' # 메트릭을 수집할 path 설정
+    static_configs:
+      - targets: ['host.docker.internal:8080'] # 도커 인스턴스 내부 호스트:8080
+# abs path: /distributed-key-value-store/key-value-managed-proxy-server/src/main/resources/prometheus.yml

@@ -1,14 +1,31 @@
 server:
-  port: 9090
+  port: 8080
+
 
 key-value:
   virtual-node-count: 10
   routes:
     nodes:
-      - http://localhost:8081
-      - http://localhost:8082
-      - http://localhost:8083
-      - http://localhost:8084
+      - http://127.0.0.1:8081
+      - http://127.0.0.1:8082
+      - http://127.0.0.1:8083
 
 logging:
   config: classpath:logback.xml
+
+management:
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}
+spring:
+  application:
+    name: key-value-store-proxy
