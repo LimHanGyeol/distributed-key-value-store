@@ -1,6 +1,6 @@
 package com.tommy.keyvaluestore.dtos
 
-data class FailureNode(
+data class FailureResolutionRequest(
     val address: String,
-    val failureNodeCount: Int,
+    val heatBeatCount: Int,
 )

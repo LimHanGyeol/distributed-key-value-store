@@ -9,7 +9,6 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.justRun
-import io.mockk.verify
 import io.mockk.verifyAll
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
@@ -109,8 +108,10 @@ class KeyValueProxyServiceTest(
         // Assert
         assertThat(actual.value).isEqualTo("value")
 
-        verify { consistentHashRouter.doHash(key) }
-        verify {consistentHashRouter.routeNode(hashedKey) }
-        verify {restTemplate.getForEntity(url, KeyValueGetResponse::class.java) }
+        verifyAll {
+            consistentHashRouter.doHash(key)
+            consistentHashRouter.routeNode(hashedKey)
+            restTemplate.getForEntity(url, KeyValueGetResponse::class.java)
+        }
     }
 }

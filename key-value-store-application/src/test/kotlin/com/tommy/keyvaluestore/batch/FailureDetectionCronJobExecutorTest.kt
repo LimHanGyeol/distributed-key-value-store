@@ -1,4 +1,4 @@
-package com.tommy.keyvaluestore.schedules
+package com.tommy.keyvaluestore.batch
 
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
@@ -12,11 +12,11 @@ import org.springframework.data.redis.core.ValueOperations
 import org.springframework.web.client.RestTemplate
 
 @ExtendWith(MockKExtension::class)
-class FailureDetectionScheduleServiceTest {
+class FailureDetectionCronJobExecutorTest {
 
     private val redisTemplate: StringRedisTemplate = mockk(relaxed = true)
     private val restTemplate: RestTemplate = mockk()
-    private val sut = FailureDetectionScheduleService("127.0.0.1:8080", restTemplate, redisTemplate)
+    private val sut = FailureDetectionCronJobExecutor("127.0.0.1:8080", restTemplate, redisTemplate)
 
     @Test
     @DisplayName("정해진 크론식 시간주기로 노드의 HeartBeat 를 계산하여 장애 감지를 한다.")

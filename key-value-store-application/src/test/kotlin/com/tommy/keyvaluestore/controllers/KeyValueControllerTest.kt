@@ -35,41 +35,40 @@ class KeyValueControllerTest @Autowired constructor(
 
         every { keyValueService.put(keyValueSaveRequest) } returns KeyValueSaveResponse(keyValueSaveRequest.key)
 
-        // Act
-        val actual = mockMvc.perform(
-            post("/")
+        // Act & Assert
+        mockMvc.perform(
+            post("/put")
                 .contentType(MediaType.APPLICATION_JSON_VALUE).characterEncoding("UTF-8")
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(keyValueSaveRequest)),
-        ).andDo(print())
-
-        // Assert
-        verify { keyValueService.put(any()) }
-
-        actual.andExpect(status().isOk)
+        )
+            .andExpect(status().isOk)
             .andExpect(jsonPath("$.key").value("name"))
+            .andDo(print())
+
+        verify { keyValueService.put(keyValueSaveRequest) }
     }
 
     @Test
     @DisplayName("key 에 해당하는 값이 존재할 경우 KeyValueGetResponse 를 응답한다.")
     fun `sut should return KeyValueGetResponse when exist key is given`() {
         // Arrange
+        val key = "name"
         val value = "hangyeol"
 
-        every { keyValueService.get("name") } returns KeyValueGetResponse(value)
+        every { keyValueService.get(key) } returns KeyValueGetResponse(value)
 
-        // Act
-        val actual = mockMvc.perform(
-            get("")
-                .param("key", "name")
+        // Act & Assert
+        mockMvc.perform(
+            get("/get")
+                .param("key", key)
                 .accept(MediaType.APPLICATION_JSON),
-        ).andDo(print())
-
-        // Assert
-        verify { keyValueService.get(any()) }
-
-        actual.andExpect(status().isOk)
+        )
+            .andExpect(status().isOk)
             .andExpect(jsonPath("$.value").value("hangyeol"))
+            .andDo(print())
+
+        verify { keyValueService.get(key) }
     }
 
     @Test
@@ -78,17 +77,16 @@ class KeyValueControllerTest @Autowired constructor(
         // Arrange
         every { keyValueService.get("name") } returns KeyValueGetResponse(null)
 
-        // Act
-        val actual = mockMvc.perform(
-            get("")
+        // Act & Assert
+        mockMvc.perform(
+            get("/get")
                 .param("key", "name")
                 .accept(MediaType.APPLICATION_JSON),
-        ).andDo(print())
-
-        // Assert
-        verify { keyValueService.get(any()) }
-
-        actual.andExpect(status().isOk)
+        )
+            .andExpect(status().isOk)
             .andExpect(jsonPath("$.value").value(null))
+            .andDo(print())
+
+        verify { keyValueService.get(any()) }
     }
 }
