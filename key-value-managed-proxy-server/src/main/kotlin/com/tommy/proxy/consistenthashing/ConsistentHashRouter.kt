@@ -63,10 +63,10 @@ class ConsistentHashRouter(
             originHashRing.firstKey()
         }
 
-        val virtualNode = originHashRing[hashedNodeValue]
-            ?: throw IllegalStateException("not found exist node. hashed node value is $hashedNodeValue")
+        val virtualNode = originHashRing[hashedNodeValue] ?: originHashRing[originHashRing.lastKey()]
 
-        return virtualNode.physicalNode
+        return virtualNode?.physicalNode
+            ?: throw IllegalStateException("not found exist node. hashed node value is $hashedNodeValue")
     }
 
     fun routeOtherNode(hashedKey: Int, primaryNode: Node): Node {
@@ -76,19 +76,27 @@ class ConsistentHashRouter(
 
         val tailMap: SortedMap<Int, VirtualNode<Node>> = originHashRing.tailMap(hashedKey)
 
+        if (tailMap.isEmpty() || tailMap.size <= 3) { // TODO: 총 노드의 10%
+            val firstVirtualNode = originHashRing[originHashRing.firstKey()]!!
+            return if (firstVirtualNode.isVirtualNodeOf(primaryNode)) {
+                originHashRing.values.first { it.physicalNode != firstVirtualNode.physicalNode }.physicalNode
+            } else {
+                firstVirtualNode.physicalNode
+            }
+        }
+
         val iterator = tailMap.keys.iterator()
         while (iterator.hasNext()) {
             val key = iterator.next()
 
-            val virtualNode =
-                originHashRing[key] ?: throw IllegalStateException("not found exist node. hashed node value is $key")
+            val virtualNode = originHashRing[key] ?: originHashRing[originHashRing.lastKey()]!!
 
             if (virtualNode.isVirtualNodeOf(primaryNode)) {
                 continue
             }
             return virtualNode.physicalNode
         }
-        throw IllegalStateException("no matching virtual node found !")
+        throw IllegalStateException("not found exist node. hashedKey is $hashedKey")
     }
 
     fun replicateHashRing() {

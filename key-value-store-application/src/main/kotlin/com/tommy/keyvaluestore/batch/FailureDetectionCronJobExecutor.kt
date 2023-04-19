@@ -30,10 +30,10 @@ class FailureDetectionCronJobExecutor(
             try {
                 logger.info { ">>> ${it.key} node is failed. failureNodeCount is ${it.value}" }
                 val requestBody = FailureResolutionRequest(address = it.key, heatBeatCount = it.value)
-                restTemplate.postForObject("http://localhost:8080/fault-node", requestBody, Unit::class.java)
+                restTemplate.postForObject("http://localhost:8080/failure-resolution", requestBody, Unit::class.java)
                 removeNode(it.key)
             } catch (e: Exception) {
-                logger.error { "failure resolution failed message: ${e.message}" }
+                logger.error { "failure resolution failed message: $e" }
                 removeNode(it.key)
             }
         }
