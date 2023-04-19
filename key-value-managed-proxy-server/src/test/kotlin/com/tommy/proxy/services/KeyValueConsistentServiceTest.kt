@@ -40,13 +40,23 @@ class KeyValueConsistentServiceTest(
         every { consistentHashRouter.routeOtherNode(hashedKey, primaryNode) } returns secondaryNode
 
         every {
-            restTemplate.postForEntity(secondaryNode.getKey(), keyValueSaveRequest, KeyValueSaveResponse::class.java)
+            restTemplate.postForEntity(
+                "${secondaryNode.getKey()}/put",
+                keyValueSaveRequest,
+                KeyValueSaveResponse::class.java,
+            )
         } returns ResponseEntity.ok().body(KeyValueSaveResponse(keyValueSaveRequest.key))
 
         // Act
-        keyValueConsistentService.consistentKeyValue(keyValueSaveRequest, primaryNode)
+        keyValueConsistentService.consistentPutKeyValue(keyValueSaveRequest, primaryNode)
 
         // Assert
-        verify { restTemplate.postForEntity(secondaryNode.getKey(), keyValueSaveRequest, KeyValueSaveResponse::class.java) }
+        verify {
+            restTemplate.postForEntity(
+                "${secondaryNode.getKey()}/put",
+                keyValueSaveRequest,
+                KeyValueSaveResponse::class.java,
+            )
+        }
     }
 }

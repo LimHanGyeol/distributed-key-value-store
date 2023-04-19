@@ -19,13 +19,14 @@ class KeyValueConsistentService(
     private val logger = KotlinLogging.logger { }
 
     @Async
-    fun consistentKeyValue(keyValueSaveRequest: KeyValueSaveRequest, primaryNode: Node) {
+    fun consistentPutKeyValue(keyValueSaveRequest: KeyValueSaveRequest, primaryNode: Node) {
         val hashedKey = hashFunction.doHash(keyValueSaveRequest.key)
         val secondaryNode = consistentHashRouter.routeOtherNode(hashedKey, primaryNode)
+        logger.info { "hashedKey: $hashedKey, secondaryNode: $secondaryNode, keyValueSaveRequest: $keyValueSaveRequest" }
 
         return try {
             val response = restTemplate.postForEntity(
-                secondaryNode.getKey(),
+                "${secondaryNode.getKey()}/put",
                 keyValueSaveRequest,
                 KeyValueSaveResponse::class.java,
             )

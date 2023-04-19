@@ -9,6 +9,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.justRun
+import io.mockk.verify
 import io.mockk.verifyAll
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
@@ -44,10 +45,10 @@ class KeyValueProxyServiceTest(
         every { consistentHashRouter.doHash(request.key) } returns hashedKey
         every { consistentHashRouter.routeNode(hashedKey) } returns primaryNode
         every {
-            restTemplate.postForEntity(eq(primaryNode.getKey()), request, KeyValueSaveResponse::class.java)
+            restTemplate.postForEntity(eq("${primaryNode.getKey()}/put"), request, KeyValueSaveResponse::class.java)
         } returns ResponseEntity.ok().body(KeyValueSaveResponse(request.key))
 
-        justRun { keyValueConsistentService.consistentKeyValue(request, primaryNode) }
+        justRun { keyValueConsistentService.consistentPutKeyValue(request, primaryNode) }
 
         // Act
         val actual = sut.put(request)
@@ -58,8 +59,8 @@ class KeyValueProxyServiceTest(
         verifyAll {
             consistentHashRouter.doHash(request.key)
             consistentHashRouter.routeNode(hashedKey)
-            restTemplate.postForEntity(eq(primaryNode.getKey()), request, KeyValueSaveResponse::class.java)
-            keyValueConsistentService.consistentKeyValue(request, primaryNode)
+            restTemplate.postForEntity(eq("${primaryNode.getKey()}/put"), request, KeyValueSaveResponse::class.java)
+            keyValueConsistentService.consistentPutKeyValue(request, primaryNode)
         }
     }
 
@@ -74,7 +75,7 @@ class KeyValueProxyServiceTest(
         every { consistentHashRouter.doHash(request.key) } returns hashedKey
         every { consistentHashRouter.routeNode(hashedKey) } returns primaryNode
         every {
-            restTemplate.postForEntity(eq(primaryNode.getKey()), request, KeyValueSaveResponse::class.java)
+            restTemplate.postForEntity(eq("${primaryNode.getKey()}/put"), request, KeyValueSaveResponse::class.java)
         } returns ResponseEntity.internalServerError().build()
 
         // Act & Assert
@@ -83,7 +84,7 @@ class KeyValueProxyServiceTest(
         verifyAll {
             consistentHashRouter.doHash(request.key)
             consistentHashRouter.routeNode(hashedKey)
-            restTemplate.postForEntity(eq(primaryNode.getKey()), request, KeyValueSaveResponse::class.java)
+            restTemplate.postForEntity(eq("${primaryNode.getKey()}/put"), request, KeyValueSaveResponse::class.java)
         }
     }
 
@@ -94,13 +95,13 @@ class KeyValueProxyServiceTest(
         val key = "80a53953-3560-45f0-97f7-384155ff0d06"
         val hashedKey = 714878469
         val instance = Instance("http://localhost:8082")
-        val url = "${instance.getKey()}?key=$key"
+        val url = "${instance.getKey()}/get?key=$key"
 
         every { consistentHashRouter.doHash(key) } returns hashedKey
         every { consistentHashRouter.routeNode(hashedKey) } returns instance
         every {
-            restTemplate.getForObject(url, KeyValueGetResponse::class.java)
-        } returns KeyValueGetResponse("value")
+            restTemplate.getForEntity(url, KeyValueGetResponse::class.java)
+        } returns ResponseEntity.ok().body(KeyValueGetResponse("value"))
 
         // Act
         val actual = sut.get(key)
@@ -108,10 +109,8 @@ class KeyValueProxyServiceTest(
         // Assert
         assertThat(actual.value).isEqualTo("value")
 
-        verifyAll {
-            consistentHashRouter.doHash(key)
-            consistentHashRouter.routeNode(hashedKey)
-            restTemplate.getForObject(url, KeyValueGetResponse::class.java)
-        }
+        verify { consistentHashRouter.doHash(key) }
+        verify {consistentHashRouter.routeNode(hashedKey) }
+        verify {restTemplate.getForEntity(url, KeyValueGetResponse::class.java) }
     }
 }

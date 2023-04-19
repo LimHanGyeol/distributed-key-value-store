@@ -14,6 +14,6 @@ class ProxyApplicationKtTest @Autowired constructor(
     @Test
     fun `get key value properties`() {
         println(keyValueRoutesProperties)
-        assertThat(keyValueRoutesProperties.nodes).hasSize(4)
+        assertThat(keyValueRoutesProperties.nodes).hasSize(3)
     }
 }

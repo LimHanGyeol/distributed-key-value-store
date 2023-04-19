@@ -1,10 +1,10 @@
 package com.tommy.proxy.controllers
 
-import com.tommy.proxy.dtos.FaultNodeRequest
+import com.tommy.proxy.dtos.FailureResolutionRequest
 import com.tommy.proxy.dtos.KeyValueGetResponse
 import com.tommy.proxy.dtos.KeyValueSaveRequest
 import com.tommy.proxy.dtos.KeyValueSaveResponse
-import com.tommy.proxy.services.FaultNodeService
+import com.tommy.proxy.services.FailureResolutionService
 import com.tommy.proxy.services.KeyValueProxyService
 import mu.KotlinLogging
 import org.springframework.web.bind.annotation.GetMapping
@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class KeyValueProxyController(
     private val keyValueProxyService: KeyValueProxyService,
-    private val faultNodeService: FaultNodeService,
+    private val failureResolutionService: FailureResolutionService,
 ) {
     private val logger = KotlinLogging.logger { }
 
-    @PostMapping("/")
+    @PostMapping("/put")
     fun save(
         @RequestBody keyValueSaveRequest: KeyValueSaveRequest,
     ): KeyValueSaveResponse {
@@ -28,7 +28,7 @@ class KeyValueProxyController(
         return keyValueProxyService.put(keyValueSaveRequest)
     }
 
-    @GetMapping
+    @GetMapping("/get")
     fun get(
         @RequestParam key: String,
     ): KeyValueGetResponse {
@@ -36,8 +36,8 @@ class KeyValueProxyController(
         return keyValueProxyService.get(key)
     }
 
-    @PostMapping("/fault-node")
-    fun handlingFaultNode(@RequestBody faultNodeRequest: FaultNodeRequest) {
-        faultNodeService.handleFaultNode(faultNodeRequest)
+    @PostMapping("/failure-resolution")
+    fun resolveFailureNode(@RequestBody failureResolutionRequest: FailureResolutionRequest) {
+        failureResolutionService.resolveFailureNode(failureResolutionRequest)
     }
 }
