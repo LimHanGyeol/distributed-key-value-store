@@ -17,14 +17,15 @@ class KeyValueController(
 ) {
     private val logger = KotlinLogging.logger { }
 
-    @PostMapping("/")
+    @PostMapping("/put")
     fun save(@RequestBody keyValueSaveRequest: KeyValueSaveRequest): KeyValueSaveResponse {
         logger.info { "request: $keyValueSaveRequest" }
         return keyValueService.put(keyValueSaveRequest)
     }
 
-    @GetMapping("/")
+    @GetMapping("/get")
     fun get(@RequestParam key: String): KeyValueGetResponse {
+        logger.info { "key: $key" }
         return keyValueService.get(key)
     }
 }
