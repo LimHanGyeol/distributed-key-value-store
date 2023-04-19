@@ -19,13 +19,17 @@ class KeyValueProxyService(
     fun put(keyValueSaveRequest: KeyValueSaveRequest): KeyValueSaveResponse {
         val hashedKey = consistentHashRouter.doHash(keyValueSaveRequest.key)
         val primaryNode = consistentHashRouter.routeNode(hashedKey)
+        logger.info { "hashedKey: $hashedKey, primaryNode: $primaryNode, keyValueSaveRequest: $keyValueSaveRequest" }
 
         return try {
-            val response =
-                restTemplate.postForEntity(primaryNode.getKey(), keyValueSaveRequest, KeyValueSaveResponse::class.java)
+            val response = restTemplate.postForEntity(
+                "${primaryNode.getKey()}/put",
+                keyValueSaveRequest,
+                KeyValueSaveResponse::class.java,
+            )
 
             if (response.statusCode.is2xxSuccessful) {
-                keyValueConsistentService.consistentKeyValue(keyValueSaveRequest, primaryNode)
+                keyValueConsistentService.consistentPutKeyValue(keyValueSaveRequest, primaryNode)
             }
 
             response.body!!
@@ -38,11 +42,13 @@ class KeyValueProxyService(
     fun get(key: String): KeyValueGetResponse {
         val hashedKey = consistentHashRouter.doHash(key)
         val instance = consistentHashRouter.routeNode(hashedKey)
-
-        val nodeIp = instance.getKey()
+        logger.info { "hashedKey: $hashedKey, instance: $instance, key: $key" }
 
         return try {
-            restTemplate.getForObject("$nodeIp?key=$key", KeyValueGetResponse::class.java)!!
+            val response =
+                restTemplate.getForEntity("${instance.getKey()}/get?key=$key", KeyValueGetResponse::class.java)
+
+            response.body!!
         } catch (e: Exception) {
             logger.error { e.message }
             throw RuntimeException(e.message)
