@@ -17,9 +17,8 @@ class KeyValueProxyService(
     private val logger = KotlinLogging.logger { }
 
     fun put(keyValueSaveRequest: KeyValueSaveRequest): KeyValueSaveResponse {
-        val hashedKey = consistentHashRouter.doHash(keyValueSaveRequest.key)
-        val primaryNode = consistentHashRouter.routeNode(hashedKey)
-        logger.info { "hashedKey: $hashedKey, primaryNode: $primaryNode, keyValueSaveRequest: $keyValueSaveRequest" }
+        val primaryNode = consistentHashRouter.routeNode(keyValueSaveRequest.key)
+        logger.info { "keyValueSaveRequest: $keyValueSaveRequest, primaryNode: $primaryNode, " }
 
         return try {
             val response = restTemplate.postForEntity(
@@ -40,9 +39,8 @@ class KeyValueProxyService(
     }
 
     fun get(key: String): KeyValueGetResponse {
-        val hashedKey = consistentHashRouter.doHash(key)
-        val instance = consistentHashRouter.routeNode(hashedKey)
-        logger.info { "hashedKey: $hashedKey, instance: $instance, key: $key" }
+        val instance = consistentHashRouter.routeNode(key)
+        logger.info { "key: $key, instance: $instance, " }
 
         return try {
             val response =

@@ -17,7 +17,6 @@ class ConsistentHashRouterTest {
         "http://localhost:8081",
         "http://localhost:8082",
         "http://localhost:8083",
-        "http://localhost:8084",
     )
 
     private val sut: ConsistentHashRouter by lazy {
@@ -42,7 +41,7 @@ class ConsistentHashRouterTest {
         val actual = sut
 
         // Assert
-        assertThat(actual.getOriginHashRingSize()).isEqualTo(40)
+        assertThat(actual.getOriginHashRingSize()).isEqualTo(30)
     }
 
     @Test
@@ -56,7 +55,7 @@ class ConsistentHashRouterTest {
         sut.addNode(targetPhysicalNode, virtualNodeCount)
 
         // Assert
-        assertThat(sut.getOriginHashRingSize()).isEqualTo(50)
+        assertThat(sut.getOriginHashRingSize()).isEqualTo(40)
     }
 
     @Test
@@ -69,7 +68,7 @@ class ConsistentHashRouterTest {
         sut.removeNode(targetPhysicalNode)
 
         // Assert
-        assertThat(sut.getOriginHashRingSize()).isEqualTo(30)
+        assertThat(sut.getOriginHashRingSize()).isEqualTo(20)
     }
 
     @Test
@@ -79,13 +78,11 @@ class ConsistentHashRouterTest {
         val key = "80a53953-3560-45f0-97f7-384155ff0d06"
 
         // Act
-        val hashedKey = sut.doHash(key)
-        val actual = sut.routeNode(hashedKey)
+        val actual = sut.routeNode(key)
 
         // Assert
         // hashedKey: 714878469
-        // 가장 가까운 노드의 hash 값: 860206175
-        // 가장 가까운 노드 정보: VirtualNode(physicalNode=http://localhost:8082, virtualIndex=4)
+        // 해당하는 노드 정보: VirtualNode(physicalNode=http://localhost:8082, virtualIndex=6)
         assertThat(actual.getKey()).isEqualTo("http://localhost:8082")
     }
 
@@ -98,15 +95,12 @@ class ConsistentHashRouterTest {
         val primaryNode = Instance("http://localhost:8082")
 
         // Act
-        val hashedKey = sut.doHash(key)
-        val actual = sut.routeOtherNode(hashedKey, primaryNode)
+        val actual = sut.routeOtherNode(key, primaryNode)
 
         // Assert
         // hashedKey: 714878469
-        // 가장 가까운 노드의 hash 값: 860206175 (http://localhost:8082)
-        // 두 번째 가까운 노드의 hash 값: 864546745
-        // 두 번째 가까운 노드의 정보: VirtualNode(physicalNode=http://localhost:8081, virtualIndex=9)
-        assertThat(actual.getKey()).isEqualTo("http://localhost:8081")
+        // 해당하는 Secondary 노드의 정보: VirtualNode(physicalNode=http://localhost:8083, virtualIndex=6)
+        assertThat(actual.getKey()).isEqualTo("http://localhost:8083")
     }
 
     @Test
@@ -119,7 +113,7 @@ class ConsistentHashRouterTest {
         sut.removeNode(Instance("http://localhost:8081"))
 
         // Assert
-        assertThat(sut.getOriginHashRingSize()).isEqualTo(30)
-        assertThat(sut.getReplicaHashRingSize()).isEqualTo(40)
+        assertThat(sut.getOriginHashRingSize()).isEqualTo(20)
+        assertThat(sut.getReplicaHashRingSize()).isEqualTo(30)
     }
 }

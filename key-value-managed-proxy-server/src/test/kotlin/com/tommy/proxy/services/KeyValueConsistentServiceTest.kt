@@ -1,7 +1,6 @@
 package com.tommy.proxy.services
 
 import com.tommy.proxy.consistenthashing.ConsistentHashRouter
-import com.tommy.proxy.consistenthashing.hash.HashFunction
 import com.tommy.proxy.consistenthashing.node.Instance
 import com.tommy.proxy.dtos.KeyValueSaveRequest
 import com.tommy.proxy.dtos.KeyValueSaveResponse
@@ -15,12 +14,10 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
-import kotlin.random.Random
 
 @ExtendWith(MockKExtension::class)
 class KeyValueConsistentServiceTest(
     @MockK private val restTemplate: RestTemplate,
-    @MockK private val hashFunction: HashFunction,
     @MockK private val consistentHashRouter: ConsistentHashRouter,
 ) {
     @InjectMockKs
@@ -32,12 +29,9 @@ class KeyValueConsistentServiceTest(
         // Arrange
         val keyValueSaveRequest = KeyValueSaveRequest("key", "value")
         val primaryNode = Instance("http://localhost:8082")
-        val hashedKey = Random.nextInt()
-
         val secondaryNode = Instance("http://localhost:8081")
 
-        every { hashFunction.doHash(keyValueSaveRequest.key) } returns hashedKey
-        every { consistentHashRouter.routeOtherNode(hashedKey, primaryNode) } returns secondaryNode
+        every { consistentHashRouter.routeOtherNode(keyValueSaveRequest.key, primaryNode) } returns secondaryNode
 
         every {
             restTemplate.postForEntity(

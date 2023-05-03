@@ -1,7 +1,6 @@
 package com.tommy.proxy.services
 
 import com.tommy.proxy.consistenthashing.ConsistentHashRouter
-import com.tommy.proxy.consistenthashing.hash.HashFunction
 import com.tommy.proxy.consistenthashing.node.Node
 import com.tommy.proxy.dtos.KeyValueSaveRequest
 import com.tommy.proxy.dtos.KeyValueSaveResponse
@@ -13,16 +12,14 @@ import org.springframework.web.client.RestTemplate
 @Service
 class KeyValueConsistentService(
     private val restTemplate: RestTemplate,
-    private val hashFunction: HashFunction,
     private val consistentHashRouter: ConsistentHashRouter,
 ) {
     private val logger = KotlinLogging.logger { }
 
     @Async
     fun consistentPutKeyValue(keyValueSaveRequest: KeyValueSaveRequest, primaryNode: Node) {
-        val hashedKey = hashFunction.doHash(keyValueSaveRequest.key)
-        val secondaryNode = consistentHashRouter.routeOtherNode(hashedKey, primaryNode)
-        logger.info { "hashedKey: $hashedKey, secondaryNode: $secondaryNode, keyValueSaveRequest: $keyValueSaveRequest" }
+        val secondaryNode = consistentHashRouter.routeOtherNode(keyValueSaveRequest.key, primaryNode)
+        logger.info { "keyValueSaveRequest:$keyValueSaveRequest, secondaryNode: $secondaryNode" }
 
         return try {
             val response = restTemplate.postForEntity(
