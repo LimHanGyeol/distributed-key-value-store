@@ -1,6 +1,5 @@
 package com.tommy.proxy.consistenthashing
 
-import com.tommy.proxy.config.KeyValueRoutesProperties
 import com.tommy.proxy.consistenthashing.hash.MurmurHash3
 import com.tommy.proxy.consistenthashing.node.Instance
 import io.mockk.junit5.MockKExtension
@@ -21,16 +20,14 @@ class ConsistentHashRouterTest {
     )
 
     private val sut: ConsistentHashRouter by lazy {
-        ConsistentHashRouter(
-            virtualNodeCount = 10,
-            keyValueRoutesProperties = KeyValueRoutesProperties(nodes = nodes),
-            hashFunction = MurmurHash3(),
-        )
+        ConsistentHashRouter(hashFunction = MurmurHash3())
     }
 
     @BeforeEach
     fun setUp() {
-        sut.initNodes()
+        nodes.forEach {
+            sut.addNode(Instance(it), 10)
+        }
     }
 
     @Test

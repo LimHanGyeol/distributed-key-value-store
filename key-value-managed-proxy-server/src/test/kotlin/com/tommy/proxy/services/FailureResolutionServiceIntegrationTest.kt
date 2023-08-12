@@ -4,17 +4,33 @@ import com.tommy.proxy.consistenthashing.ConsistentHashRouter
 import com.tommy.proxy.consistenthashing.node.Instance
 import com.tommy.proxy.dtos.FailureResolutionRequest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
 
+@Disabled("Embedded Redis 설정 필요")
 @SpringBootTest
 class FailureResolutionServiceIntegrationTest @Autowired constructor(
     private val failureResolutionService: FailureResolutionService,
     private val consistentHashRouter: ConsistentHashRouter,
 ) {
+
+    private val nodes = listOf(
+        "http://127.0.0.1:8081",
+        "http://127.0.0.1:8082",
+        "http://127.0.0.1:8083",
+    )
+
+    @BeforeEach
+    fun setUp() {
+        nodes.forEach {
+            consistentHashRouter.addNode(Instance(it), 10)
+        }
+    }
 
     @Test
     fun `sut handle fault node when FaultNodeRequest is given`() {

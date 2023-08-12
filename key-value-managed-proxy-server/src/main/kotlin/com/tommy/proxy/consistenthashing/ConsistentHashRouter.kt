@@ -1,30 +1,18 @@
 package com.tommy.proxy.consistenthashing
 
-import com.tommy.proxy.config.KeyValueRoutesProperties
 import com.tommy.proxy.consistenthashing.hash.HashFunction
-import com.tommy.proxy.consistenthashing.node.Instance
 import com.tommy.proxy.consistenthashing.node.Node
 import com.tommy.proxy.consistenthashing.node.VirtualNode
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.util.SortedMap
 import java.util.TreeMap
 
 @Component
 class ConsistentHashRouter(
-    @Value("\${key-value.virtual-node-count:0}") private val virtualNodeCount: Int,
-    private val keyValueRoutesProperties: KeyValueRoutesProperties,
     private val hashFunction: HashFunction,
 ) {
     private val originHashRing: TreeMap<Int, VirtualNode<Node>> = TreeMap()
     private lateinit var replicaHashRing: TreeMap<Int, VirtualNode<Node>>
-
-    fun initNodes() {
-        val physicalNodes: List<Node> = keyValueRoutesProperties.nodes.map { Instance(it) }
-        for (physicalNode in physicalNodes) {
-            addNode(physicalNode, virtualNodeCount)
-        }
-    }
 
     fun addNode(physicalNode: Node, virtualNodeCount: Int) {
         if (virtualNodeCount < 0) {
