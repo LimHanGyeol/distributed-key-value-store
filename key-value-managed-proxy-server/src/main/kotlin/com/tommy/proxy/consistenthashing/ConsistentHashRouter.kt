@@ -18,9 +18,28 @@ class ConsistentHashRouter(
         if (virtualNodeCount < 0) {
             throw IllegalArgumentException("invalid virtual node counts: $virtualNodeCount")
         }
-        val existingReplicas = getExistingVirtualNodeCount(physicalNode)
-        for (i in 0 until virtualNodeCount) {
-            val virtualNode = VirtualNode(physicalNode, i + existingReplicas)
+
+        if (originHashRing.isEmpty()) {
+            addFirstNode(physicalNode, virtualNodeCount)
+            return
+        }
+        addOtherNode(physicalNode, virtualNodeCount)
+    }
+
+    private fun addFirstNode(physicalNode: Node, virtualNodeCount: Int) {
+        val virtualNodeIndex = virtualNodeCount - 1
+        originHashRing[Long.MIN_VALUE] = VirtualNode(physicalNode, FIRST_NODE_INDEX)
+        originHashRing[Long.MAX_VALUE] = VirtualNode(physicalNode, virtualNodeIndex)
+        addVirtualNodes(physicalNode, 1, virtualNodeIndex)
+    }
+
+    private fun addOtherNode(physicalNode: Node, virtualNodeCount: Int) {
+        addVirtualNodes(physicalNode, FIRST_NODE_INDEX, virtualNodeCount)
+    }
+
+    private fun addVirtualNodes(physicalNode: Node, start: Int, end: Int) {
+        (start until end).forEach { i ->
+            val virtualNode = VirtualNode(physicalNode, i)
             val hashedKey = hashFunction.doHash(virtualNode.getKey())
             originHashRing[hashedKey] = virtualNode
         }
@@ -94,4 +113,8 @@ class ConsistentHashRouter(
     fun getOriginHashRingSize(): Int = originHashRing.size
 
     fun getReplicaHashRingSize(): Int = replicaHashRing.size
+
+    companion object {
+        private const val FIRST_NODE_INDEX = 0
+    }
 }
