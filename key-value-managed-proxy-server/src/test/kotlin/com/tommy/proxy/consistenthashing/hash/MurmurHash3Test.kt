@@ -18,6 +18,6 @@ class MurmurHash3Test {
         val actual = sut.doHash(key)
 
         // Assert
-        assertThat(actual).isEqualTo(184398511)
+        assertThat(actual).isEqualTo(4002884747242636850L)
     }
 }

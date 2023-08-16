@@ -6,9 +6,9 @@ import org.springframework.stereotype.Component
 @Component
 class MurmurHash3 : HashFunction {
 
-    override fun doHash(key: String): Int {
-        return Hashing.murmur3_32_fixed()
+    override fun doHash(key: String): Long {
+        return Hashing.murmur3_128()
             .hashString(key, Charsets.UTF_8)
-            .asInt()
+            .asLong()
     }
 }
