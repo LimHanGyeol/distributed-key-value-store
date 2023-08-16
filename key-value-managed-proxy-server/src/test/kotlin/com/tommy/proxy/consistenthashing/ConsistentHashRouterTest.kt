@@ -99,11 +99,11 @@ class ConsistentHashRouterTest {
         val actual = sut.routeOtherNode(hashedKey, primaryNode)
 
         // Assert
-        // hashedKey: 714878469
-        // 가장 가까운 노드의 hash 값: 860206175 (http://localhost:8082)
-        // 두 번째 가까운 노드의 hash 값: 864546745
-        // 두 번째 가까운 노드의 정보: VirtualNode(physicalNode=http://localhost:8081, virtualIndex=9)
-        assertThat(actual.getKey()).isEqualTo("http://localhost:8081")
+        // hashedKey: -4797992637988812037
+        // 가장 가까운 노드의 hash 값: -4421527676906511933 (http://localhost:8082)
+        // 두 번째 가까운 노드의 hash 값: -4312220692094205533
+        // 두 번째 가까운 노드의 정보: VirtualNode(physicalNode=http://localhost:8083, virtualIndex=7)
+        assertThat(actual.getKey()).isEqualTo("http://localhost:8083")
     }
 
     @Test
