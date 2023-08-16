@@ -38,7 +38,7 @@ class KeyValueProxyServiceTest(
     fun `sut should return KeyValueSaveResponse when keyValueSaveRequest is given`() {
         // Arrange
         val request = KeyValueSaveRequest("80a53953-3560-45f0-97f7-384155ff0d06", "value")
-        val hashedKey = 714878469
+        val hashedKey = 714878469L
         val primaryNode = Instance("http://localhost:8082")
 
         every { consistentHashRouter.doHash(request.key) } returns hashedKey
@@ -68,7 +68,7 @@ class KeyValueProxyServiceTest(
     fun `sut should throws RuntimeException when keyValue put is failed`() {
         // Arrange
         val request = KeyValueSaveRequest("80a53953-3560-45f0-97f7-384155ff0d06", "value")
-        val hashedKey = 714878469
+        val hashedKey = 714878469L
         val primaryNode = Instance("http://localhost:8082")
 
         every { consistentHashRouter.doHash(request.key) } returns hashedKey
@@ -92,7 +92,7 @@ class KeyValueProxyServiceTest(
     fun `sut should return KeyValueGetResponse when key is given`() {
         // Arrange
         val key = "80a53953-3560-45f0-97f7-384155ff0d06"
-        val hashedKey = 714878469
+        val hashedKey = 714878469L
         val instance = Instance("http://localhost:8082")
         val url = "${instance.getKey()}/get?key=$key"
 

@@ -32,7 +32,7 @@ class KeyValueConsistentServiceTest(
         // Arrange
         val keyValueSaveRequest = KeyValueSaveRequest("key", "value")
         val primaryNode = Instance("http://localhost:8082")
-        val hashedKey = Random.nextInt()
+        val hashedKey = Random.nextLong()
 
         val secondaryNode = Instance("http://localhost:8081")
 

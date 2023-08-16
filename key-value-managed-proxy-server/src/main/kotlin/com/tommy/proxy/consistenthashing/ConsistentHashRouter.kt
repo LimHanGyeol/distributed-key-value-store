@@ -11,8 +11,8 @@ import java.util.TreeMap
 class ConsistentHashRouter(
     private val hashFunction: HashFunction,
 ) {
-    private val originHashRing: TreeMap<Int, VirtualNode<Node>> = TreeMap()
-    private lateinit var replicaHashRing: TreeMap<Int, VirtualNode<Node>>
+    private val originHashRing: TreeMap<Long, VirtualNode<Node>> = TreeMap()
+    private lateinit var replicaHashRing: TreeMap<Long, VirtualNode<Node>>
 
     fun addNode(physicalNode: Node, virtualNodeCount: Int) {
         if (virtualNodeCount < 0) {
@@ -27,7 +27,7 @@ class ConsistentHashRouter(
     }
 
     fun removeNode(physicalNode: Node) {
-        val iterator: MutableIterator<Int> = originHashRing.keys.iterator()
+        val iterator: MutableIterator<Long> = originHashRing.keys.iterator()
         while (iterator.hasNext()) {
             val key = iterator.next()
             val virtualNode = originHashRing[key]
@@ -38,12 +38,12 @@ class ConsistentHashRouter(
         }
     }
 
-    fun routeNode(hashedKey: Int): Node {
+    fun routeNode(hashedKey: Long): Node {
         if (originHashRing.isEmpty()) {
             throw IllegalStateException("hashRing is Empty !")
         }
 
-        val tailMap: SortedMap<Int, VirtualNode<Node>> = originHashRing.tailMap(hashedKey)
+        val tailMap: SortedMap<Long, VirtualNode<Node>> = originHashRing.tailMap(hashedKey)
 
         val hashedNodeValue = if (tailMap.isNotEmpty()) {
             tailMap.firstKey()
@@ -57,12 +57,12 @@ class ConsistentHashRouter(
             ?: throw IllegalStateException("not found exist node. hashed node value is $hashedNodeValue")
     }
 
-    fun routeOtherNode(hashedKey: Int, primaryNode: Node): Node {
+    fun routeOtherNode(hashedKey: Long, primaryNode: Node): Node {
         if (originHashRing.isEmpty()) {
             throw IllegalStateException("hashRing is Empty !")
         }
 
-        val tailMap: SortedMap<Int, VirtualNode<Node>> = originHashRing.tailMap(hashedKey)
+        val tailMap: SortedMap<Long, VirtualNode<Node>> = originHashRing.tailMap(hashedKey)
 
         if (tailMap.isEmpty() || tailMap.size <= 3) { // TODO: 총 노드의 10%
             val firstVirtualNode = originHashRing[originHashRing.firstKey()]!!
@@ -75,6 +75,7 @@ class ConsistentHashRouter(
 
         val iterator = tailMap.keys.iterator()
         while (iterator.hasNext()) {
+            Long.MAX_VALUE
             val key = iterator.next()
 
             val virtualNode = originHashRing[key] ?: originHashRing[originHashRing.lastKey()]!!
@@ -97,7 +98,7 @@ class ConsistentHashRouter(
         )
     }
 
-    fun doHash(key: String): Int = hashFunction.doHash(key)
+    fun doHash(key: String): Long = hashFunction.doHash(key)
 
     fun getOriginHashRingSize(): Int = originHashRing.size
 
