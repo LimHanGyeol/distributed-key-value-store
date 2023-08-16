@@ -27,15 +27,7 @@ class ConsistentHashRouter(
     }
 
     fun removeNode(physicalNode: Node) {
-        val iterator: MutableIterator<Long> = originHashRing.keys.iterator()
-        while (iterator.hasNext()) {
-            val key = iterator.next()
-            val virtualNode = originHashRing[key]
-
-            if (virtualNode?.isVirtualNodeOf(physicalNode) == true) {
-                iterator.remove()
-            }
-        }
+        originHashRing.entries.removeIf { it.value.isVirtualNodeOf(physicalNode) }
     }
 
     fun routeNode(hashedKey: Long): Node {
@@ -75,7 +67,6 @@ class ConsistentHashRouter(
 
         val iterator = tailMap.keys.iterator()
         while (iterator.hasNext()) {
-            Long.MAX_VALUE
             val key = iterator.next()
 
             val virtualNode = originHashRing[key] ?: originHashRing[originHashRing.lastKey()]!!
