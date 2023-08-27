@@ -1,7 +1,7 @@
-package com.tommy.keyvaluestore.services
+package com.tommy.keyvaluestore.service
 
-import com.tommy.keyvaluestore.dtos.NodeRegisterRequest
-import com.tommy.keyvaluestore.dtos.NodeRegisterResponse
+import com.tommy.keyvaluestore.dto.NodeRegisterRequest
+import com.tommy.keyvaluestore.dto.NodeRegisterResponse
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.ApplicationArguments

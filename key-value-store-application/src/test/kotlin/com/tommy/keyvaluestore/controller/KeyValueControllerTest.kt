@@ -1,11 +1,11 @@
-package com.tommy.keyvaluestore.controllers
+package com.tommy.keyvaluestore.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
-import com.tommy.keyvaluestore.dtos.KeyValueGetResponse
-import com.tommy.keyvaluestore.dtos.KeyValueSaveRequest
-import com.tommy.keyvaluestore.dtos.KeyValueSaveResponse
-import com.tommy.keyvaluestore.services.KeyValueService
+import com.tommy.keyvaluestore.dto.KeyValueGetResponse
+import com.tommy.keyvaluestore.dto.KeyValueSaveRequest
+import com.tommy.keyvaluestore.dto.KeyValueSaveResponse
+import com.tommy.keyvaluestore.service.KeyValueService
 import io.mockk.every
 import io.mockk.verify
 import org.junit.jupiter.api.DisplayName

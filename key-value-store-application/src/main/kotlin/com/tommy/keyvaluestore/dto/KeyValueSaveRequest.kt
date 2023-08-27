@@ -1,4 +1,4 @@
-package com.tommy.keyvaluestore.dtos
+package com.tommy.keyvaluestore.dto
 
 data class KeyValueSaveRequest(
     val key: String,

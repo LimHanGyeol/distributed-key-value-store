@@ -1,4 +1,4 @@
-package com.tommy.keyvaluestore.configs
+package com.tommy.keyvaluestore.config
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean

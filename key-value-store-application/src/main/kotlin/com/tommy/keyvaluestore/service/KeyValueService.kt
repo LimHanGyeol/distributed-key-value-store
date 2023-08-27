@@ -1,8 +1,8 @@
-package com.tommy.keyvaluestore.services
+package com.tommy.keyvaluestore.service
 
-import com.tommy.keyvaluestore.dtos.KeyValueGetResponse
-import com.tommy.keyvaluestore.dtos.KeyValueSaveRequest
-import com.tommy.keyvaluestore.dtos.KeyValueSaveResponse
+import com.tommy.keyvaluestore.dto.KeyValueGetResponse
+import com.tommy.keyvaluestore.dto.KeyValueSaveRequest
+import com.tommy.keyvaluestore.dto.KeyValueSaveResponse
 import com.tommy.store.MemoryStore
 import org.springframework.stereotype.Service
 

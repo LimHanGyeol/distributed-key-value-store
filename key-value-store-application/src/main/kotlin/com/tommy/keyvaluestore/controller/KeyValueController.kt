@@ -1,9 +1,9 @@
-package com.tommy.keyvaluestore.controllers
+package com.tommy.keyvaluestore.controller
 
-import com.tommy.keyvaluestore.dtos.KeyValueGetResponse
-import com.tommy.keyvaluestore.dtos.KeyValueSaveRequest
-import com.tommy.keyvaluestore.dtos.KeyValueSaveResponse
-import com.tommy.keyvaluestore.services.KeyValueService
+import com.tommy.keyvaluestore.dto.KeyValueGetResponse
+import com.tommy.keyvaluestore.dto.KeyValueSaveRequest
+import com.tommy.keyvaluestore.dto.KeyValueSaveResponse
+import com.tommy.keyvaluestore.service.KeyValueService
 import mu.KotlinLogging
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
