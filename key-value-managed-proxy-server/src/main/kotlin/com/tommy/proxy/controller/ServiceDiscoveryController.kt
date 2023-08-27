@@ -1,8 +1,8 @@
-package com.tommy.proxy.controllers
+package com.tommy.proxy.controller
 
-import com.tommy.proxy.dtos.NodeRegisterRequest
-import com.tommy.proxy.dtos.NodeRegisterResponse
-import com.tommy.proxy.services.ServiceDiscoveryService
+import com.tommy.proxy.dto.NodeRegisterRequest
+import com.tommy.proxy.dto.NodeRegisterResponse
+import com.tommy.proxy.service.ServiceDiscoveryService
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController

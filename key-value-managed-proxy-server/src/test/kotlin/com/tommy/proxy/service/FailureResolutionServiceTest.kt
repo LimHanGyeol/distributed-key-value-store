@@ -1,9 +1,9 @@
-package com.tommy.proxy.services
+package com.tommy.proxy.service
 
 import com.tommy.proxy.consistenthashing.ConsistentHashRouter
 import com.tommy.proxy.consistenthashing.node.Instance
-import com.tommy.proxy.dtos.FailureResolutionRequest
-import com.tommy.proxy.exceptions.LockProcessFailedException
+import com.tommy.proxy.dto.FailureResolutionRequest
+import com.tommy.proxy.exception.LockProcessFailedException
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

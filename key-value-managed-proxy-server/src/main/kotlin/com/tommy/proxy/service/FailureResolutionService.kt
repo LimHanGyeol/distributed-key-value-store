@@ -1,11 +1,11 @@
-package com.tommy.proxy.services
+package com.tommy.proxy.service
 
 import com.tommy.proxy.consistenthashing.ConsistentHashRouter
 import com.tommy.proxy.consistenthashing.node.Instance
-import com.tommy.proxy.dtos.FailureResolutionRequest
-import com.tommy.proxy.exceptions.AlreadyProcessedLockException
-import com.tommy.proxy.exceptions.LockAcquisitionFailedException
-import com.tommy.proxy.exceptions.LockProcessFailedException
+import com.tommy.proxy.dto.FailureResolutionRequest
+import com.tommy.proxy.exception.AlreadyProcessedLockException
+import com.tommy.proxy.exception.LockAcquisitionFailedException
+import com.tommy.proxy.exception.LockProcessFailedException
 import mu.KotlinLogging
 import org.redisson.api.RedissonClient
 import org.springframework.stereotype.Service

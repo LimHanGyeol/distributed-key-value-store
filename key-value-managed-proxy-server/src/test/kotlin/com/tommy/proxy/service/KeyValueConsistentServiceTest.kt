@@ -1,10 +1,10 @@
-package com.tommy.proxy.services
+package com.tommy.proxy.service
 
 import com.tommy.proxy.consistenthashing.ConsistentHashRouter
 import com.tommy.proxy.consistenthashing.hash.HashFunction
 import com.tommy.proxy.consistenthashing.node.Instance
-import com.tommy.proxy.dtos.KeyValueSaveRequest
-import com.tommy.proxy.dtos.KeyValueSaveResponse
+import com.tommy.proxy.dto.KeyValueSaveRequest
+import com.tommy.proxy.dto.KeyValueSaveResponse
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

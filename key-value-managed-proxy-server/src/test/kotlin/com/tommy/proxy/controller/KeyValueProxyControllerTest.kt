@@ -1,13 +1,13 @@
-package com.tommy.proxy.controllers
+package com.tommy.proxy.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
-import com.tommy.proxy.dtos.FailureResolutionRequest
-import com.tommy.proxy.dtos.KeyValueGetResponse
-import com.tommy.proxy.dtos.KeyValueSaveRequest
-import com.tommy.proxy.dtos.KeyValueSaveResponse
-import com.tommy.proxy.services.FailureResolutionService
-import com.tommy.proxy.services.KeyValueProxyService
+import com.tommy.proxy.dto.FailureResolutionRequest
+import com.tommy.proxy.dto.KeyValueGetResponse
+import com.tommy.proxy.dto.KeyValueSaveRequest
+import com.tommy.proxy.dto.KeyValueSaveResponse
+import com.tommy.proxy.service.FailureResolutionService
+import com.tommy.proxy.service.KeyValueProxyService
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.verify

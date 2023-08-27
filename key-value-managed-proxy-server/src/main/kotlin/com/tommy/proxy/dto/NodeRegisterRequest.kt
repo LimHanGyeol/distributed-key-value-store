@@ -1,4 +1,4 @@
-package com.tommy.proxy.dtos
+package com.tommy.proxy.dto
 
 data class NodeRegisterRequest(
     val address: String,

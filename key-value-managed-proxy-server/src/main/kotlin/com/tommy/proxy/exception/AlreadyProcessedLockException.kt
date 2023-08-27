@@ -1,3 +1,3 @@
-package com.tommy.proxy.exceptions
+package com.tommy.proxy.exception
 
 class AlreadyProcessedLockException(message: String) : RuntimeException(message)
