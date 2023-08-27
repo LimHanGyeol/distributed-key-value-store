@@ -13,14 +13,13 @@ import org.springframework.web.client.RestTemplate
 @Service
 class KeyValueConsistentService(
     private val restTemplate: RestTemplate,
-    private val hashFunction: HashFunction,
     private val consistentHashRouter: ConsistentHashRouter,
 ) {
     private val logger = KotlinLogging.logger { }
 
     @Async
     fun consistentPutKeyValue(keyValueSaveRequest: KeyValueSaveRequest, primaryNode: Node) {
-        val hashedKey = hashFunction.doHash(keyValueSaveRequest.key)
+        val hashedKey = consistentHashRouter.doHash(keyValueSaveRequest.key)
         val secondaryNode = consistentHashRouter.routeOtherNode(hashedKey, primaryNode)
         logger.info { "hashedKey: $hashedKey, secondaryNode: $secondaryNode, keyValueSaveRequest: $keyValueSaveRequest" }
 
