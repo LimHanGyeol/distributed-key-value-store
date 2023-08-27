@@ -19,8 +19,6 @@ class ServiceDiscoveryService(
 
         logger.info { "current total hashing size: ${consistentHashRouter.getOriginHashRingSize()}" }
 
-        return NodeRegisterResponse(
-            existsNodeCount = consistentHashRouter.getExistingVirtualNodeCount(physicalNode),
-        )
+        return NodeRegisterResponse(existsNodeCount = consistentHashRouter.getExistingVirtualNodeCount(physicalNode))
     }
 }

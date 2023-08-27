@@ -27,7 +27,7 @@ class FailureResolutionService(
             if (!available) {
                 throw LockAcquisitionFailedException("잠금 획득 실패($failureResolutionRequest)")
             }
-            val faultNode = Instance("http://${failureResolutionRequest.address}")
+            val faultNode = Instance(failureResolutionRequest.address)
             val existingVirtualNodeCount = consistentHashRouter.getExistingVirtualNodeCount(faultNode)
 
             if (existingVirtualNodeCount == 0) {

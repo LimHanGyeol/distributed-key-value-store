@@ -4,7 +4,7 @@ class Instance(
     private val ip: String,
 ) : Node {
 
-    override fun getKey(): String = ip
+    override fun getKey(): String = "http://$ip"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
