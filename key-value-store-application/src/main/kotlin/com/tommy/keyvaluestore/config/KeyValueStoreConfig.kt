@@ -1,4 +1,4 @@
-package com.tommy.keyvaluestore.configs
+package com.tommy.keyvaluestore.config
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.web.client.RestTemplateBuilder
@@ -25,7 +25,8 @@ class KeyValueStoreConfig {
     @Bean
     fun restTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate? {
         return restTemplateBuilder.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .setConnectTimeout(Duration.ofMillis(5000)).setReadTimeout(Duration.ofMillis(5000))
+            .setConnectTimeout(Duration.ofMillis(5000))
+            .setReadTimeout(Duration.ofMillis(5000))
             .additionalMessageConverters(StringHttpMessageConverter(Charsets.UTF_8)).build()
     }
 }

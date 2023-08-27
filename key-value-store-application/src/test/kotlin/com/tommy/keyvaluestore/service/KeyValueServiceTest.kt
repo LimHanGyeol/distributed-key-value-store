@@ -1,8 +1,8 @@
-package com.tommy.keyvaluestore.services
+package com.tommy.keyvaluestore.service
 
-import com.tommy.keyvaluestore.dtos.KeyValueGetResponse
-import com.tommy.keyvaluestore.dtos.KeyValueSaveRequest
-import com.tommy.keyvaluestore.dtos.KeyValueSaveResponse
+import com.tommy.keyvaluestore.dto.KeyValueGetResponse
+import com.tommy.keyvaluestore.dto.KeyValueSaveRequest
+import com.tommy.keyvaluestore.dto.KeyValueSaveResponse
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension

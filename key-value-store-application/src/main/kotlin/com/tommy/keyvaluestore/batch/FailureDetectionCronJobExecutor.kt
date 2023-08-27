@@ -1,6 +1,6 @@
 package com.tommy.keyvaluestore.batch
 
-import com.tommy.keyvaluestore.dtos.FailureResolutionRequest
+import com.tommy.keyvaluestore.dto.FailureResolutionRequest
 import mu.KotlinLogging
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.core.ValueOperations
