@@ -1,9 +1,9 @@
-package com.tommy.proxy.services
+package com.tommy.proxy.service
 
 import com.tommy.proxy.consistenthashing.ConsistentHashRouter
 import com.tommy.proxy.consistenthashing.node.Instance
-import com.tommy.proxy.dtos.NodeRegisterRequest
-import com.tommy.proxy.dtos.NodeRegisterResponse
+import com.tommy.proxy.dto.NodeRegisterRequest
+import com.tommy.proxy.dto.NodeRegisterResponse
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 

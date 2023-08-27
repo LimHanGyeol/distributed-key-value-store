@@ -1,10 +1,10 @@
-package com.tommy.proxy.controllers
+package com.tommy.proxy.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
-import com.tommy.proxy.dtos.NodeRegisterRequest
-import com.tommy.proxy.dtos.NodeRegisterResponse
-import com.tommy.proxy.services.ServiceDiscoveryService
+import com.tommy.proxy.dto.NodeRegisterRequest
+import com.tommy.proxy.dto.NodeRegisterResponse
+import com.tommy.proxy.service.ServiceDiscoveryService
 import io.mockk.every
 import io.mockk.verify
 import org.junit.jupiter.api.DisplayName

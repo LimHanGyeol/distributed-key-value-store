@@ -1,8 +1,8 @@
-package com.tommy.proxy.services
+package com.tommy.proxy.service
 
 import com.tommy.proxy.consistenthashing.ConsistentHashRouter
 import com.tommy.proxy.consistenthashing.node.Instance
-import com.tommy.proxy.dtos.NodeRegisterRequest
+import com.tommy.proxy.dto.NodeRegisterRequest
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

@@ -1,9 +1,9 @@
-package com.tommy.proxy.services
+package com.tommy.proxy.service
 
 import com.tommy.proxy.consistenthashing.ConsistentHashRouter
-import com.tommy.proxy.dtos.KeyValueGetResponse
-import com.tommy.proxy.dtos.KeyValueSaveRequest
-import com.tommy.proxy.dtos.KeyValueSaveResponse
+import com.tommy.proxy.dto.KeyValueGetResponse
+import com.tommy.proxy.dto.KeyValueSaveRequest
+import com.tommy.proxy.dto.KeyValueSaveResponse
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
