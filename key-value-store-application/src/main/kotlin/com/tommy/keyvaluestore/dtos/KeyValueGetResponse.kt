@@ -1,5 +1,5 @@
 package com.tommy.keyvaluestore.dtos
 
-class KeyValueGetResponse(
+data class KeyValueGetResponse(
     val value: Any?,
 )
