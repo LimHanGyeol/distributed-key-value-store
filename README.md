@@ -87,6 +87,13 @@ MurmurHash는 비암호화 해시로 암호화의 안정성보다 성능과 해�
 
 ![consistent_hashing](images/key_value_store_topology.png)
 
+```text
+분산 시스템의 데이터 분산 방식
+MongoDB(Sharded Cluster - Hashed Sharding): MD5
+Kafka: MurmurHash(Key) % Partition Count
+Redis: CRC16 Hash(Key) % Hash Slot(16384)
+```
+
 ## 데이터 다중화와 데이터 일관성
 
 분산 시스템에서 높은 가용성(High Availability)을 확보하기 위해선 데이터를 N개의 서버에 비동기적으로 다중화 (replication)해야합니다.
