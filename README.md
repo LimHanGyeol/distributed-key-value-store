@@ -91,7 +91,7 @@ MurmurHash는 비암호화 해시로 암호화의 안정성보다 성능과 해�
 분산 시스템의 데이터 분산 방식
 MongoDB(Sharded Cluster - Hashed Sharding): MD5
 Kafka: MurmurHash(Key) % Partition Count
-Redis: CRC16 Hash(Key) % Hash Slot(16384)
+Redis Cluster: CRC16 Hash(Key) % Hash Slot(16384)
 ```
 
 ## 데이터 다중화와 데이터 일관성
